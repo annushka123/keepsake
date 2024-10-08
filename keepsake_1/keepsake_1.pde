@@ -6,6 +6,9 @@ import java.util.Random;
 
 Movie[] mov = new Movie[3];
 PImage[] img = new PImage[11];
+PImage previousFrame, currentFrame, diffFrame;
+
+ArrayList<ParticleSystem> systems;
 
 boolean videoStarted = false;
 boolean videoStopped = false;
@@ -15,6 +18,7 @@ int currentState = 0;
 int currentImage = 0;
 int selectedMovie = -1;  // To remember which movie was chosen (1 or 2)
 Random rand = new Random();
+int thresholdValue = 40;  // Sensitivity for pixel subtraction
 
 OscP5 oscP5;
 NetAddress dest;
@@ -23,8 +27,11 @@ NetAddress dest;
 float f1, f2, f3, f4, f5, f6, f7, f8, f9, f10;
 
 void setup() {
-  // fullScreen(2);
-  size(1200, 800);
+   fullScreen(P2D, 2);
+  //size(1200, 800);
+  
+  systems = new ArrayList<ParticleSystem>();;
+  
 
   for (int i = 0; i < img.length; i++) {
     img[i] = loadImage("photo" + i + ".jpg");
@@ -33,8 +40,12 @@ void setup() {
   }
 
   for (int i = 0; i < mov.length; i++) {
-    mov[i] = new Movie(this, "music_box" + i + ".mp4");
+    mov[i] = new Movie(this, "keepsake" + i + ".mp4");
   }
+  // Prepare images to hold frame data
+  currentFrame = createImage(width, height, RGB);
+  previousFrame = createImage(width, height, RGB);
+  diffFrame = createImage(width, height, RGB);
 
   mov[currentMovie].play();
 }
@@ -45,7 +56,27 @@ void movieEvent(Movie m) {
 
 void draw() {
   background(0);
+  
+  //  for (ParticleSystem ps: systems) {
+  //  ps.run();
+  //  ps.addParticle(); 
+  //}
+  
+  
   variousStates();
+  
+  currentFrame.copy(mov[currentMovie], 0, 0, mov[currentMovie].width, mov[currentMovie].height, 0, 0, width, height);
+  currentFrame.loadPixels();
+
+  // Process the current frame to detect differences (outline)
+  pixelSubtraction();
+
+  // Display the processed frame
+  image(diffFrame, 0, 0, width, height);
+  
+  // Save current frame as previous frame for next iteration
+  previousFrame.copy(currentFrame, 0, 0, width, height, 0, 0, width, height);
+  previousFrame.updatePixels();
 }
 
 void variousStates() {
