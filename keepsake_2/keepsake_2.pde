@@ -4,9 +4,10 @@ import netP5.*;
 import java.util.Iterator;
 import java.util.Random;
 
-Movie[] mov = new Movie[4];
+Movie[] mov = new Movie[10];
 PImage[] img = new PImage[11];
 PImage  currentFrame, previousFrame, diffFrame;
+PImage  currentFrame2, previousFrame2, diffFrame2;
 
 
 ParticleSystem ps;
@@ -60,6 +61,10 @@ void setup() {
   currentFrame = createImage(width, height, RGB);
   previousFrame = createImage(width, height, RGB);
   diffFrame = createImage(width, height, RGB);
+  
+  currentFrame2 = createImage(width, height, RGB);
+  previousFrame2 = createImage(width, height, RGB);
+  diffFrame2 = createImage(width, height, RGB);
 
   mov[currentMovie].play();
 }
@@ -76,16 +81,47 @@ void draw() {
 
 
 
-  variousStates();
+    variousStates();
+  
+    if (currentState == 0) {
+    image(mov[currentMovie], 0, 0, width, height);  // Display the first movie
+
+    //// Now apply the pixel subtraction and render the diffFrame
+    currentFrame.copy(mov[currentMovie], 0, 0, mov[currentMovie].width, mov[currentMovie].height, 0, 0, width, height);
+    currentFrame2.copy(mov[8], 0, 0, mov[8].width, mov[8].height, 0, 0, width, height);
+    
+    currentFrame.loadPixels();
+    currentFrame2.loadPixels();
+
+    //// Perform pixel subtraction to detect motion differences
+    pixelSubtraction(currentFrame, previousFrame, diffFrame );
+    pixelSubtraction(currentFrame2, previousFrame2, diffFrame2 );
 
 
-  // Only process pixel subtraction and diffFrame when you're in a movie-playing state (0, 1, 3, 4)
-  if (currentState == 0 || currentState == 1 || currentState == 3 || currentState == 4) {
+    //// Update previous frame for the next iteration
+    previousFrame.copy(currentFrame, 0, 0, width, height, 0, 0, width, height);
+    previousFrame2.copy(currentFrame2, 0, 0, width, height, 0, 0, width, height);
+    
+    
+    previousFrame.updatePixels();
+    previousFrame2.updatePixels();  
+    
+       
+    //// Render the difference frame on top of everything
+    image(diffFrame, 0, 0, width, height);
+    
+    // Blend the second movie on top of the first
+    blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
+  }
+
+
+  //// Only process pixel subtraction and diffFrame when you're in a movie-playing state (0, 1, 3, 4)
+  if (currentState == 1 || currentState == 3 || currentState == 4) {
     currentFrame.copy(mov[currentMovie], 0, 0, mov[currentMovie].width, mov[currentMovie].height, 0, 0, width, height);
     currentFrame.loadPixels();
 
     // Process the current frame to detect differences (outline)
-    pixelSubtraction();
+    pixelSubtraction(currentFrame, previousFrame, diffFrame );
 
     // Display the processed frame (video difference outline)
     image(diffFrame, 0, 0, width, height);
@@ -101,17 +137,7 @@ void draw() {
     ps.run();
   }
 
-  //if(currentState == 2) {
 
-  //  //ps.addPhotoParticle(img[currentImage]);
-  //  //ps.run();
-  // updateBackground = !updateBackground;
-  // photoParticles();
-
-  // //ps.addParticle();
-  // //ps.run();
-
-  //}
 }
 
 void variousStates() {
@@ -120,8 +146,17 @@ void variousStates() {
     // Play Movie 0
 
     currentMovie = 0;
-    println("State 0: Playing Movie 0");
+    //println("State 0: Playing Movie 0");
     image(mov[currentMovie], 0, 0, width, height);  // Display the movie
+    
+    //currentMovie = 8;
+    if(!mov[8].isPlaying()) {
+    mov[8].play();
+    println("Is mov[8] loaded and playing? " + mov[8].isPlaying());
+
+    }
+    //blend(mov[8], 0, 0, width, height, 0, 0, width, height, ADD); 
+
     break;
 
   case 1:

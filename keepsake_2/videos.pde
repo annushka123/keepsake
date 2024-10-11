@@ -1,4 +1,4 @@
-void pixelSubtraction() {
+void pixelSubtraction(PImage currentFrame, PImage previousFrame, PImage diffFrame  ) {
   diffFrame.loadPixels();
   previousFrame.loadPixels();
   currentFrame.loadPixels();
