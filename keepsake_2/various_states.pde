@@ -1,5 +1,5 @@
 
-
+int unselectedMovie = -1; 
 
 void startingState() {
   switch(currentState) {
@@ -36,6 +36,7 @@ void variousStates() {
     // Randomly choose between Movie 1 and 2
     if (selectedMovie == -1) {
       selectedMovie = rand.nextInt(2) + 1;  // Randomly pick Movie 1 or 2
+      unselectedMovie = (selectedMovie == 1) ? 2 : 1; 
       //println("State 1: Randomly selected Movie " + selectedMovie);
       mov[selectedMovie].play();  // Play the randomly selected movie
     }
@@ -48,7 +49,7 @@ void variousStates() {
     // Display particles generated from the current image
     println("State 2: Displaying particles from Image " + currentImage);
     //image(img[currentImage], 0, 0, width, height);
-    mov[currentMovie].stop();
+    //mov[currentMovie].stop();
     updateBackground = false;
     //photoParticles();
     ps.addPhotoParticle();
@@ -60,12 +61,17 @@ void variousStates() {
   case 3:
 
     // Play the movie that wasn't chosen in case 1
-    currentMovie = (selectedMovie == 1) ? 2 : 1;
+    currentMovie = unselectedMovie; 
     println("State 3: Playing Movie " + currentMovie);
     mov[currentMovie].play();  // Play the other movie
     image(mov[currentMovie], 0, 0, width, height);  // Display the movie
     break;
+    
+  }
+}
 
+void endingState() {
+switch(currentState) {
   case 4:
     // Return to Movie 0
     currentMovie = 0;
@@ -78,28 +84,23 @@ void variousStates() {
 
 
 void keyPressed() {
-  if (key == 'n') {  // 'n' moves to the next state
-    currentState++;
+  if (key == 'n' && currentState == 2) {  // Move to state 3 from 2
+    currentState = 3;
+    println("Transitioned to State 3");
+  }
 
-    if (currentState == 2) {
-      println("Transitioning to State 2: Stopping Movie " + currentMovie);
-      mov[currentMovie].stop();  // Stop the current movie when switching to particles
-    } else if (currentState == 3) {
-      println("Transitioning to State 3: Playing the other movie");
-      mov[currentMovie].play();  // Play the movie that wasn't chosen after particles
-    } else if (currentState > 4) {
-      println("Resetting to State 0");
-      currentState = 0;
-      selectedMovie = -1;  // Reset the selected movie
-      mov[currentMovie].play();
-    }
-  } else if (key == 'i') {  // 'i' cycles through images in state 2
-    if (currentState == 2) {
-      currentImage = (currentImage + 1) % img.length;  // Cycle through images
-      println("State 2: Cycling through images. Current image: " + currentImage);
-    }
+  if (key == 'i' && currentState == 2) {  // Cycle through images in state 2
+    currentImage = (currentImage + 1) % img.length;
+    println("State 2: Cycling through images. Current image: " + currentImage);
+  }
+
+  if (key == 'r') {  // Reset everything for testing
+    currentState = 0;
+    state2Triggered = false;  // Reset flags
+    println("Reset to State 0");
   }
 }
+
 
 void photoBackground() {
 

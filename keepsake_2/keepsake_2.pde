@@ -18,6 +18,7 @@ ParticleSystem ps;
 
 boolean videoStarted = false;
 boolean videoStopped = false;
+boolean state4Triggered = false;
 
 int currentMovie = 0;
 int currentState = 0;
@@ -27,14 +28,12 @@ Random rand = new Random();
 int thresholdValue = 40;  // Sensitivity for pixel subtraction
 
 boolean updateBackground = true;  // Flag to control background
-boolean state2Triggered = false; 
+boolean state2Triggered = false;
 
 
-// wekinator features
-float f1, startingGesture, f3, f4, f5, f6, f7, f8, f9, f10;
 
-//max values
-float sb2, sb3 = 0;
+
+
 
 void setup() {
   //fullScreen(2);
@@ -42,9 +41,6 @@ void setup() {
   setupOSC();
 
   ps = new ParticleSystem();
-
-
-
 
 
   for (int i = 0; i < img.length; i++) {
@@ -84,19 +80,13 @@ void movieEvent(Movie m) {
 }
 
 void draw() {
+  // Set the background initially
   if (updateBackground) {
-    background(0);  // Set the background initially
+    background(0);
   }
 
-  println("Current state: " + currentState);
-  
-  variousStates();
-  
-    // Add this to debug when state 2 is reached
-  if (currentState == 2) {
-    println("Confirmed: Now in State 2");
-  }
 
+  //starts the piece
   if (startingGesture == 2. && previousGesture != 2. && !pieceHasStarted) {
     startThePiece();
     println("startingGesture: ", startingGesture);
@@ -106,16 +96,82 @@ void draw() {
 
   previousGesture = startingGesture;
 
-  //println("sb2: " + sb2);
+  //keeps track of states
+  println("Current state: " + currentState);
 
-  if (sb2 > 0. && currentState == 0) {
+  //calls all the states post starting state
+  variousStates();
+
+
+  //goes from state 0 to state 1
+  if (sb2 == 1. && currentState == 0) {
 
     currentState = 1;
     //println("currentState is: " + currentState);
   }
 
-  
+  //matches two optional videos with their melodies in max
+  if (currentState == 1 && previousState != 0 && selectedMovie == 1) {
 
+    goToSB2a();
+    //println("selectedMovie is: " + selectedMovie);
+    previousState = state1a;
+    println("playing movie 1");
+    
+  } else if (currentState == 1 && previousState != 1 && selectedMovie == 2) {
+
+    goToSB2b();
+    //println("selectedMovie is: " + selectedMovie);
+    previousState = state1b;
+    println("playing movie 2");
+  }
+
+
+  //goes to state 2 (images)
+  if (currentState == 1 && sb3 == 1. && !state2Triggered) {
+    
+    currentState = 2;
+    state2Triggered = true;
+    println("gone to state 2");
+    
+  }
+
+  ///debug when state 2 is reached
+  if (currentState == 2) {
+    println("Confirmed: Now in State 2");
+  }
+  
+  if (currentState == 2 && key == 'n') {
+    
+    currentState = 3;
+    
+  }
+
+  if (currentState == 3 && previousState4 != 3 && unselectedMovie == 1) {
+    goToSB4a();
+    previousState4 = state4a;
+    println("playing movie 1");
+    
+  } else if (currentState == 3 && previousState4 != 4 && unselectedMovie == 2) {
+    goToSB4b();
+    previousState4 = state4b;
+    println("playing movie 2");
+  }
+
+  if(sb5 == 2. && currentState == 3 && !state4Triggered) {
+  endingState();  
+  currentState = 4;
+  state4Triggered = true;
+  if(sb6 == 1.) {
+    mov[currentMovie].stop();
+    //add a faid to black
+    background(0);
+  }
+  endThePiece();
+
+  }
+  
+  //image processing functions
   if (currentState == 0) {
     //image(mov[currentMovie], 0, 0, width, height);  // Display the first movie
 
@@ -146,7 +202,6 @@ void draw() {
     previousFrame2.updatePixels();
   }
 
-
   //// Only process pixel subtraction and diffFrame when you're in a movie-playing state (0, 1, 3, 4)
   if (currentState == 1 || currentState == 3 || currentState == 4) {
     currentFrame.copy(mov[currentMovie], 0, 0, mov[currentMovie].width, mov[currentMovie].height, 0, 0, width, height);
@@ -162,32 +217,6 @@ void draw() {
     previousFrame.copy(currentFrame, 0, 0, width, height, 0, 0, width, height);
     previousFrame.updatePixels();
   }
-
-  if (currentState == 1 && previousState != 0 && selectedMovie == 1) {
-
-    goToSB2a();
-    //println("selectedMovie is: " + selectedMovie);
-    previousState = state1a;
-
-
-    
-  } else if (currentState == 1 && previousState != 1 && selectedMovie == 2) {
-
-    goToSB2b();
-    //println("selectedMovie is: " + selectedMovie);
-    previousState = state1b;
-
-
-  }
-
-  if(currentState == 1 && sb3 > 0. && !state2Triggered) {
-    
-    
-    currentState = 2;
-    state2Triggered = true;
-    println("gone to state 2");
-  }
-
 
   if (currentState == 1 || currentState == 3) {
 

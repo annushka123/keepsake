@@ -1,5 +1,9 @@
+// wekinator features
+float f1, startingGesture, f3, f4, f5, f6, f7, f8, f9, f10;
 
 
+//max values
+float sb2, sb3, sb5, sb6 = 0;
 
 void setupOSC() {
   oscP5 = new OscP5(this, 12001);
@@ -53,6 +57,28 @@ void oscEvent(OscMessage theOscMessage) {
       sb3 = theOscMessage.get(0).floatValue();
       if(sb3 != 0) {
       println("sb3: " + sb3);
+      
+      }
+    }
+  }
+  
+      if (theOscMessage.checkAddrPattern("/max/outputs/sb5") == true) {
+    if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
+      
+      sb5 = theOscMessage.get(0).floatValue();
+      if(sb5 != 0) {
+      println("sb5: " + sb5);
+      
+      }
+    }
+  }
+  
+        if (theOscMessage.checkAddrPattern("/max/outputs/sb6") == true) {
+    if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
+      
+      sb5 = theOscMessage.get(0).floatValue();
+      if(sb6 != 0) {
+      println("sb5: " + sb6);
       
       }
     }
