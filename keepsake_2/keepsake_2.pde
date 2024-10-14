@@ -27,13 +27,14 @@ Random rand = new Random();
 int thresholdValue = 40;  // Sensitivity for pixel subtraction
 
 boolean updateBackground = true;  // Flag to control background
+boolean state2Triggered = false; 
 
 
 // wekinator features
 float f1, startingGesture, f3, f4, f5, f6, f7, f8, f9, f10;
 
 //max values
-float sb2=0;
+float sb2, sb3 = 0;
 
 void setup() {
   //fullScreen(2);
@@ -41,6 +42,8 @@ void setup() {
   setupOSC();
 
   ps = new ParticleSystem();
+
+
 
 
 
@@ -85,25 +88,32 @@ void draw() {
     background(0);  // Set the background initially
   }
 
-
+  println("Current state: " + currentState);
+  
+  variousStates();
+  
+    // Add this to debug when state 2 is reached
+  if (currentState == 2) {
+    println("Confirmed: Now in State 2");
+  }
 
   if (startingGesture == 2. && previousGesture != 2. && !pieceHasStarted) {
     startThePiece();
     println("startingGesture: ", startingGesture);
-    variousStates();
+    startingState();
     currentState = 0;
   }
-  
+
   previousGesture = startingGesture;
 
   //println("sb2: " + sb2);
-  
-  if(sb2 > 0.) {
-    
+
+  if (sb2 > 0. && currentState == 0) {
+
     currentState = 1;
-    println("currentState is: " + currentState);
+    //println("currentState is: " + currentState);
   }
-  
+
   
 
   if (currentState == 0) {
@@ -153,118 +163,35 @@ void draw() {
     previousFrame.updatePixels();
   }
 
+  if (currentState == 1 && previousState != 0 && selectedMovie == 1) {
+
+    goToSB2a();
+    //println("selectedMovie is: " + selectedMovie);
+    previousState = state1a;
+
+
+    
+  } else if (currentState == 1 && previousState != 1 && selectedMovie == 2) {
+
+    goToSB2b();
+    //println("selectedMovie is: " + selectedMovie);
+    previousState = state1b;
+
+
+  }
+
+  if(currentState == 1 && sb3 > 0. && !state2Triggered) {
+    
+    
+    currentState = 2;
+    state2Triggered = true;
+    println("gone to state 2");
+  }
+
+
   if (currentState == 1 || currentState == 3) {
 
     ps.addParticle();
     ps.run();
   }
-}
-
- void variousStates() {
-  switch(currentState) {
-
-  case 0:
-    // Play Movie 0
-
-    pieceHasStarted = true;
-    previousGesture = startingGesture;
-    currentMovie = 0;
-    //println("State 0: Playing Movie 0");
-    image(mov[currentMovie], 0, 0, width, height);  // Display the movie
-        if (!mov[currentMovie].isPlaying()) {
-      mov[currentMovie].play();
-      println("Is mov[currentMovie] loaded and playing? " + mov[currentMovie].isPlaying());
-    }
-    //currentMovie = 8;
-    if (!mov[8].isPlaying()) {
-      mov[8].loop();
-      println("Is mov[8] loaded and playing? " + mov[8].isPlaying());
-    }
-    
-    //blend(mov[8], 0, 0, width, height, 0, 0, width, height, ADD);
-
-    break;
-  
-
-  
-
-  
-
-  case 1:
-
-    // Randomly choose between Movie 1 and 2
-    if (selectedMovie == -1) {
-      selectedMovie = rand.nextInt(2) + 1;  // Randomly pick Movie 1 or 2
-      println("State 1: Randomly selected Movie " + selectedMovie);
-      mov[selectedMovie].play();  // Play the randomly selected movie
-    }
-    currentMovie = selectedMovie;
-    println("State 1: Playing Movie " + currentMovie);
-    image(mov[currentMovie], 0, 0, width, height);  // Display the movie
-    break;
-  
-
-
-
-  case 2:
-    // Display particles generated from the current image
-    println("State 2: Displaying particles from Image " + currentImage);
-    //image(img[currentImage], 0, 0, width, height);
-
-    updateBackground = false;
-    //photoParticles();
-    ps.addPhotoParticle();
-
-    ps.run();
-
-    break;
-
-  case 3:
-
-    // Play the movie that wasn't chosen in case 1
-    currentMovie = (selectedMovie == 1) ? 2 : 1;
-    println("State 3: Playing Movie " + currentMovie);
-    mov[currentMovie].play();  // Play the other movie
-    image(mov[currentMovie], 0, 0, width, height);  // Display the movie
-    break;
-
-  case 4:
-    // Return to Movie 0
-    currentMovie = 0;
-    mov[currentMovie].play();  // Ensure Movie 0 plays again
-    println("State 4: Returning to Movie 0");
-    image(mov[currentMovie], 0, 0, width, height);  // Display the movie
-    break;
-  }
-}
-
-
-void keyPressed() {
-  if (key == 'n') {  // 'n' moves to the next state
-    currentState++;
-
-    if (currentState == 2) {
-      println("Transitioning to State 2: Stopping Movie " + currentMovie);
-      mov[currentMovie].stop();  // Stop the current movie when switching to particles
-    } else if (currentState == 3) {
-      println("Transitioning to State 3: Playing the other movie");
-      mov[currentMovie].play();  // Play the movie that wasn't chosen after particles
-    } else if (currentState > 4) {
-      println("Resetting to State 0");
-      currentState = 0;
-      selectedMovie = -1;  // Reset the selected movie
-      mov[currentMovie].play();
-    }
-  } else if (key == 'i') {  // 'i' cycles through images in state 2
-    if (currentState == 2) {
-      currentImage = (currentImage + 1) % img.length;  // Cycle through images
-      println("State 2: Cycling through images. Current image: " + currentImage);
-    }
-  }
-}
-
-void photoBackground() {
-
-  fill(0);
-  rect(0, 0, width, height);
 }

@@ -47,5 +47,16 @@ void oscEvent(OscMessage theOscMessage) {
     }
   }
   
+    if (theOscMessage.checkAddrPattern("/max/outputs/sb3") == true) {
+    if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
+      
+      sb3 = theOscMessage.get(0).floatValue();
+      if(sb3 != 0) {
+      println("sb3: " + sb3);
+      
+      }
+    }
+  }
+  
 }
   
