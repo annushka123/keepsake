@@ -4,6 +4,10 @@ import netP5.*;
 import java.util.Iterator;
 import java.util.Random;
 
+
+OscP5 oscP5;
+NetAddress goingToMax;
+
 Movie[] mov = new Movie[10];
 PImage[] img = new PImage[11];
 PImage  currentFrame, previousFrame, diffFrame;
@@ -23,15 +27,18 @@ Random rand = new Random();
 int thresholdValue = 40;  // Sensitivity for pixel subtraction
 
 boolean updateBackground = true;  // Flag to control background
-OscP5 oscP5;
-NetAddress dest;
+
 
 // wekinator features
-float f1, f2, f3, f4, f5, f6, f7, f8, f9, f10;
+float f1, startingGesture, f3, f4, f5, f6, f7, f8, f9, f10;
+
+//max values
+float sb2=0;
 
 void setup() {
   //fullScreen(2);
   size(1200, 800);
+  setupOSC();
 
   ps = new ParticleSystem();
 
@@ -61,12 +68,12 @@ void setup() {
   currentFrame = createImage(width, height, RGB);
   previousFrame = createImage(width, height, RGB);
   diffFrame = createImage(width, height, RGB);
-  
+
   currentFrame2 = createImage(width, height, RGB);
   previousFrame2 = createImage(width, height, RGB);
   diffFrame2 = createImage(width, height, RGB);
 
-  mov[currentMovie].play();
+  //mov[currentMovie].play();
 }
 
 void movieEvent(Movie m) {
@@ -80,16 +87,25 @@ void draw() {
 
 
 
-
-    variousStates();
+  if (startingGesture == 2. && previousGesture != 2. && !pieceHasStarted) {
+    startThePiece();
+    println("startingGesture: ", startingGesture);
+    startingState();
+  }
   
-    if (currentState == 0) {
-    image(mov[currentMovie], 0, 0, width, height);  // Display the first movie
+  previousGesture = startingGesture;
+
+  println("sb2: " + sb2);
+  
+  variousStates();
+
+  if (currentState == 0) {
+    //image(mov[currentMovie], 0, 0, width, height);  // Display the first movie
 
     //// Now apply the pixel subtraction and render the diffFrame
     currentFrame.copy(mov[currentMovie], 0, 0, mov[currentMovie].width, mov[currentMovie].height, 0, 0, width, height);
     currentFrame2.copy(mov[8], 0, 0, mov[8].width, mov[8].height, 0, 0, width, height);
-    
+
     currentFrame.loadPixels();
     currentFrame2.loadPixels();
 
@@ -98,20 +114,19 @@ void draw() {
     pixelSubtraction(currentFrame2, previousFrame2, diffFrame2 );
 
 
+    //// Render the difference frame on top of everything
+    image(diffFrame, 0, 0, width, height);
+
+    // Blend the second movie on top of the first
+    blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
+
     //// Update previous frame for the next iteration
     previousFrame.copy(currentFrame, 0, 0, width, height, 0, 0, width, height);
     previousFrame2.copy(currentFrame2, 0, 0, width, height, 0, 0, width, height);
-    
-    
+
+
     previousFrame.updatePixels();
-    previousFrame2.updatePixels();  
-    
-       
-    //// Render the difference frame on top of everything
-    image(diffFrame, 0, 0, width, height);
-    
-    // Blend the second movie on top of the first
-    blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
+    previousFrame2.updatePixels();
   }
 
 
@@ -136,29 +151,37 @@ void draw() {
     ps.addParticle();
     ps.run();
   }
-
-
 }
 
-void variousStates() {
+void startingState() {
   switch (currentState) {
   case 0:
     // Play Movie 0
 
+    pieceHasStarted = true;
+    previousGesture = startingGesture;
     currentMovie = 0;
     //println("State 0: Playing Movie 0");
     image(mov[currentMovie], 0, 0, width, height);  // Display the movie
-    
-    //currentMovie = 8;
-    if(!mov[8].isPlaying()) {
-    mov[8].play();
-    println("Is mov[8] loaded and playing? " + mov[8].isPlaying());
-
+        if (!mov[currentMovie].isPlaying()) {
+      mov[currentMovie].play();
+      println("Is mov[currentMovie] loaded and playing? " + mov[currentMovie].isPlaying());
     }
-    //blend(mov[8], 0, 0, width, height, 0, 0, width, height, ADD); 
+    //currentMovie = 8;
+    if (!mov[8].isPlaying()) {
+      mov[8].loop();
+      println("Is mov[8] loaded and playing? " + mov[8].isPlaying());
+    }
+    
+    //blend(mov[8], 0, 0, width, height, 0, 0, width, height, ADD);
 
     break;
-
+  }
+}
+  
+void variousStates() {
+  
+  switch(currentState) {
   case 1:
 
     // Randomly choose between Movie 1 and 2
@@ -180,13 +203,13 @@ void variousStates() {
     updateBackground = false;
     //photoParticles();
     ps.addPhotoParticle();
-    
+
     ps.run();
-    
+
     break;
 
   case 3:
-    
+
     // Play the movie that wasn't chosen in case 1
     currentMovie = (selectedMovie == 1) ? 2 : 1;
     println("State 3: Playing Movie " + currentMovie);

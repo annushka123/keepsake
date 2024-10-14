@@ -2,8 +2,8 @@
 
 
 void setupOSC() {
-  oscP5 = new OscP5(this, 12000);
-  dest = new NetAddress("127.0.0.1", 6450);
+  oscP5 = new OscP5(this, 12001);
+  goingToMax = new NetAddress("127.0.0.1", 6450);
 }
 
 
@@ -13,7 +13,7 @@ void oscEvent(OscMessage theOscMessage) {
       //bow speed
       f1 = theOscMessage.get(0).floatValue();
       //bow position
-      f2 = theOscMessage.get(1).floatValue();
+      startingGesture = theOscMessage.get(1).floatValue();
       //starting gesture
       f3 = theOscMessage.get(2).floatValue();
       //bow acceleration
@@ -29,6 +29,23 @@ void oscEvent(OscMessage theOscMessage) {
       f8 = theOscMessage.get(7).floatValue();
       f9 = theOscMessage.get(8).floatValue();
       f10 = theOscMessage.get(9).floatValue();
+      
+      
     }
   }
+  
+
+
+
+  if (theOscMessage.checkAddrPattern("/max/outputs/sb2") == true) {
+    if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
+      
+      sb2 = theOscMessage.get(0).floatValue();
+      
+      
+      
+    }
+  }
+  
 }
+  

@@ -16,9 +16,9 @@ void pixelSubtraction(PImage currentFrame, PImage previousFrame, PImage diffFram
 
     // Apply a threshold to highlight differences
     if (diff > thresholdValue) {
-      diffFrame.pixels[i] = color(150, 30, 100, 30);  // Mark as white for the outline
+      diffFrame.pixels[i] = color(150, 30, 100, 130);  // Mark as white for the outline
     } else {
-      diffFrame.pixels[i] = color(0);    // Black background
+      diffFrame.pixels[i] = color(0, 0);    // Black background
     }
   }
 
