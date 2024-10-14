@@ -90,14 +90,21 @@ void draw() {
   if (startingGesture == 2. && previousGesture != 2. && !pieceHasStarted) {
     startThePiece();
     println("startingGesture: ", startingGesture);
-    startingState();
+    variousStates();
+    currentState = 0;
   }
   
   previousGesture = startingGesture;
 
-  println("sb2: " + sb2);
+  //println("sb2: " + sb2);
   
-  variousStates();
+  if(sb2 > 0.) {
+    
+    currentState = 1;
+    println("currentState is: " + currentState);
+  }
+  
+  
 
   if (currentState == 0) {
     //image(mov[currentMovie], 0, 0, width, height);  // Display the first movie
@@ -153,8 +160,9 @@ void draw() {
   }
 }
 
-void startingState() {
-  switch (currentState) {
+ void variousStates() {
+  switch(currentState) {
+
   case 0:
     // Play Movie 0
 
@@ -176,12 +184,12 @@ void startingState() {
     //blend(mov[8], 0, 0, width, height, 0, 0, width, height, ADD);
 
     break;
-  }
-}
   
-void variousStates() {
+
   
-  switch(currentState) {
+
+  
+
   case 1:
 
     // Randomly choose between Movie 1 and 2
@@ -194,6 +202,9 @@ void variousStates() {
     println("State 1: Playing Movie " + currentMovie);
     image(mov[currentMovie], 0, 0, width, height);  // Display the movie
     break;
+  
+
+
 
   case 2:
     // Display particles generated from the current image
