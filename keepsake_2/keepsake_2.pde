@@ -97,7 +97,7 @@ void draw() {
   previousGesture = startingGesture;
 
   //keeps track of states
-  println("Current state: " + currentState);
+  //println("Current state: " + currentState);
 
   //calls all the states post starting state
   variousStates();
@@ -134,18 +134,22 @@ void draw() {
     state2Triggered = true;
     println("gone to state 2");
     
+    
+    
   }
 
-  ///debug when state 2 is reached
+  /////debug when state 2 is reached
   if (currentState == 2) {
     println("Confirmed: Now in State 2");
+    
+    autoCycleImages();
+    startML();
+    println("State 2: Cycling through images. Current image: " + currentImage);
+    if(currentImage == 10) {
+      currentState = 3;
+    }
   }
   
-  if (currentState == 2 && key == 'n') {
-    
-    currentState = 3;
-    
-  }
 
   if (currentState == 3 && previousState4 != 3 && unselectedMovie == 1) {
     goToSB4a();
@@ -159,16 +163,22 @@ void draw() {
   }
 
   if(sb5 == 2. && currentState == 3 && !state4Triggered) {
-  endingState();  
+    
+   
   currentState = 4;
   state4Triggered = true;
-  if(sb6 == 1.) {
+  endThePiece();
+  
+  println("State 4: Playing Movie" + currentMovie);
+  
+  }
+  
+  if(currentState == 4 && sb6 == 1.) {
+    
     mov[currentMovie].stop();
     //add a faid to black
-    background(0);
-  }
-  endThePiece();
-
+    photoBackground();
+    
   }
   
   //image processing functions

@@ -4,6 +4,7 @@ float state1a = 0.;
 float state1b = 1.;
 float state4a = 3.;
 float state4b = 4.;
+int generate = 6;
 float endPiece = 5.;
 float previousGesture = 1.;
 boolean pieceHasStarted = false;
@@ -26,6 +27,8 @@ OscMessage myMessage = new OscMessage("/melodies");
 
 myMessage.add(state1a);
 oscP5.send(myMessage, goingToMax);
+
+println("sent message to Max");
   
 }
 void goToSB2b() {
@@ -34,6 +37,8 @@ OscMessage myMessage = new OscMessage("/melodies");
 
 myMessage.add(state1b);
 oscP5.send(myMessage, goingToMax);
+
+println("sent message to Max");
   
 }
 
@@ -43,6 +48,8 @@ OscMessage myMessage = new OscMessage("/melodies");
 
 myMessage.add(state4a);
 oscP5.send(myMessage, goingToMax);
+
+println("sent message to Max");
   
 }
 void goToSB4b() {
@@ -51,6 +58,21 @@ OscMessage myMessage = new OscMessage("/melodies");
 
 myMessage.add(state4b);
 oscP5.send(myMessage, goingToMax);
+
+println("sent message to Max");
+  
+}
+
+
+//starts generated melodies
+void startML() {
+  
+OscMessage myMessage = new OscMessage("/markov");
+
+myMessage.add(generate);
+oscP5.send(myMessage, goingToMax); 
+
+println("sent generate message to Max");
   
 }
 
@@ -60,7 +82,5 @@ OscMessage myMessage = new OscMessage("/melodies");
 
 myMessage.add(endPiece);
 oscP5.send(myMessage, goingToMax);
-
-
 
 }

@@ -78,7 +78,7 @@ void oscEvent(OscMessage theOscMessage) {
       
       sb5 = theOscMessage.get(0).floatValue();
       if(sb6 != 0) {
-      println("sb5: " + sb6);
+      println("sb6: " + sb6);
       
       }
     }

@@ -1,5 +1,21 @@
 
+int imageChangeDuration = 3000;
+int lastImageChangeDuration = 0;
 
+void autoCycleImages() {
+  
+  if(millis() - lastImageChangeDuration >= imageChangeDuration) {
+    
+    currentImage = (currentImage + 1) % img.length;
+    
+    lastImageChangeDuration = millis();
+    
+  }
+  
+  
+  //image(img[currentImage], 0, 0, width, height);
+
+}
 class PhotoParticles extends Particles {
   
     // Constructor

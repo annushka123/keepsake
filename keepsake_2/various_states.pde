@@ -67,11 +67,7 @@ void variousStates() {
     image(mov[currentMovie], 0, 0, width, height);  // Display the movie
     break;
     
-  }
-}
 
-void endingState() {
-switch(currentState) {
   case 4:
     // Return to Movie 0
     currentMovie = 0;
