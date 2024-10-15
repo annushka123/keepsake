@@ -1,4 +1,5 @@
 float previousState = -1;
+float previousState2 = -1;
 float previousState4 = -1;
 float state1a = 0.;
 float state1b = 1.;

@@ -14,9 +14,9 @@ class Particles {
   }
 
   // Apply a force to the particle (for steering toward the target)
-  //void applyForce(PVector force) {
-  //  acceleration.add(force);
-  //}
+  void applyForce(PVector force) {
+    acceleration.add(force);
+  }
 
   // Move the particle toward the target
   void update() {

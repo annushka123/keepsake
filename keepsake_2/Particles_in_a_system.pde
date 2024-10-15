@@ -32,4 +32,9 @@ class ParticleSystem {
       }
     }
   }
+  
+    // Clear all particles
+  void clear() {
+    particles.clear();  // Remove all particles from the list
+  }
 }

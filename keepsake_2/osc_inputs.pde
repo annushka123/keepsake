@@ -1,5 +1,5 @@
 // wekinator features
-float f1, startingGesture, f3, f4, f5, f6, f7, f8, f9, f10;
+float bowSpeed, startingGesture, f3, f4, f5, f6, f7, f8, f9, f10;
 
 
 //max values
@@ -15,7 +15,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/wek/outputs") == true) {
     if (theOscMessage.checkTypetag("ffffffffff")) { // Now looking for 6 parameters
       //bow speed
-      f1 = theOscMessage.get(0).floatValue();
+      bowSpeed = theOscMessage.get(0).floatValue();
       //bow position
       startingGesture = theOscMessage.get(1).floatValue();
       //starting gesture

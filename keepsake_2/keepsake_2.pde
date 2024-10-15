@@ -30,6 +30,8 @@ int thresholdValue = 40;  // Sensitivity for pixel subtraction
 boolean updateBackground = true;  // Flag to control background
 boolean state2Triggered = false;
 
+float alphaIncrease = 0;
+
 
 
 
@@ -117,7 +119,6 @@ void draw() {
     //println("selectedMovie is: " + selectedMovie);
     previousState = state1a;
     println("playing movie 1");
-    
   } else if (currentState == 1 && previousState != 1 && selectedMovie == 2) {
 
     goToSB2b();
@@ -129,58 +130,67 @@ void draw() {
 
   //goes to state 2 (images)
   if (currentState == 1 && sb3 == 1. && !state2Triggered) {
-    
+
     currentState = 2;
     state2Triggered = true;
     println("gone to state 2");
-    
-    
-    
   }
 
   /////debug when state 2 is reached
-  if (currentState == 2) {
+  if (currentState == 2 ) {
     println("Confirmed: Now in State 2");
-    
+
     autoCycleImages();
-    startML();
     println("State 2: Cycling through images. Current image: " + currentImage);
-    if(currentImage == 10) {
-      currentState = 3;
-    }
+
+  }
+
+  if (currentState == 2 &&  previousState2 != 6) {
+
+    startML();
+    previousState2 = generate;
+    
+
   }
   
 
+          if (currentImage == 4) {
+      ps.clear();  // Clear photo particles when moving to State 3
+      currentState = 3;
+      println("Transitioning to State 3");
+    }
+
   if (currentState == 3 && previousState4 != 3 && unselectedMovie == 1) {
+
     goToSB4a();
     previousState4 = state4a;
     println("playing movie 1");
-    
   } else if (currentState == 3 && previousState4 != 4 && unselectedMovie == 2) {
+
     goToSB4b();
     previousState4 = state4b;
     println("playing movie 2");
   }
 
-  if(sb5 == 2. && currentState == 3 && !state4Triggered) {
-    
-   
-  currentState = 4;
-  state4Triggered = true;
-  endThePiece();
-  
-  println("State 4: Playing Movie" + currentMovie);
-  
+  if (sb5 == 2. && currentState == 3 && !state4Triggered) {
+
+
+    currentState = 4;
+    state4Triggered = true;
+    endThePiece();
+
+    println("State 4: Playing Movie" + currentMovie);
   }
-  
-  if(currentState == 4 && sb6 == 1.) {
-    
-    mov[currentMovie].stop();
-    //add a faid to black
-    photoBackground();
-    
-  }
-  
+
+  //if(currentMovie == 0 && sb6 == 1.) {
+  //  if(mov[currentMovie].isPlaying()) {
+  //  mov[currentMovie].stop();
+  //  //add a faid to black
+  //  photoBackground();
+  //  }
+
+  //}
+
   //image processing functions
   if (currentState == 0) {
     //image(mov[currentMovie], 0, 0, width, height);  // Display the first movie
@@ -192,16 +202,27 @@ void draw() {
     currentFrame.loadPixels();
     currentFrame2.loadPixels();
 
+
     //// Perform pixel subtraction to detect motion differences
-    pixelSubtraction(currentFrame, previousFrame, diffFrame );
-    pixelSubtraction(currentFrame2, previousFrame2, diffFrame2 );
+    pixelSubtraction(currentFrame, previousFrame, diffFrame, 130, 30, 130, 130 );
+    pixelSubtraction(currentFrame2, previousFrame2, diffFrame2, 50, 130, 100, alphaIncrease );
 
 
     //// Render the difference frame on top of everything
     image(diffFrame, 0, 0, width, height);
 
     // Blend the second movie on top of the first
-    blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
+    if (bowSpeed >= 2.) {
+      blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
+      alphaIncrease += 0.5;
+      //println(alphaIncrease);
+      //constrain(amt, low, high)
+      alphaIncrease = constrain(alphaIncrease, 0, 130);
+    } else if (bowSpeed < 2.) {
+      alphaIncrease -= 0.2;
+      alphaIncrease = constrain(alphaIncrease, 0, 130);
+      //println(alphaIncrease);
+    }
 
     //// Update previous frame for the next iteration
     previousFrame.copy(currentFrame, 0, 0, width, height, 0, 0, width, height);
@@ -218,7 +239,7 @@ void draw() {
     currentFrame.loadPixels();
 
     // Process the current frame to detect differences (outline)
-    pixelSubtraction(currentFrame, previousFrame, diffFrame );
+    pixelSubtraction(currentFrame, previousFrame, diffFrame, 130, 30, 130, 130 );
 
     // Display the processed frame (video difference outline)
     image(diffFrame, 0, 0, width, height);

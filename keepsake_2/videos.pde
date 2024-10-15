@@ -1,4 +1,4 @@
-void pixelSubtraction(PImage currentFrame, PImage previousFrame, PImage diffFrame  ) {
+void pixelSubtraction(PImage currentFrame, PImage previousFrame, PImage diffFrame, int r, int g, int b, float a  ) {
   diffFrame.loadPixels();
   previousFrame.loadPixels();
   currentFrame.loadPixels();
@@ -16,7 +16,7 @@ void pixelSubtraction(PImage currentFrame, PImage previousFrame, PImage diffFram
 
     // Apply a threshold to highlight differences
     if (diff > thresholdValue) {
-      diffFrame.pixels[i] = color(150, 30, 100, 130);  // Mark as white for the outline
+      diffFrame.pixels[i] = color(r, g, b, a);  // Mark as white for the outline
     } else {
       diffFrame.pixels[i] = color(0, 0);    // Black background
     }
