@@ -1,5 +1,5 @@
 // wekinator features
-float bowSpeed, startingGesture, f3, f4, f5, f6, f7, f8, f9, f10;
+float bowSpeed, startingGesture, vert_pos, f4, f5, f6, f7, f8, f9, f10;
 
 
 //max values
@@ -19,7 +19,7 @@ void oscEvent(OscMessage theOscMessage) {
       //bow position
       startingGesture = theOscMessage.get(1).floatValue();
       //starting gesture
-      f3 = theOscMessage.get(2).floatValue();
+      vert_pos = theOscMessage.get(2).floatValue();
       //bow acceleration
       f4 = theOscMessage.get(3).floatValue();
       //note density
@@ -80,16 +80,10 @@ void oscEvent(OscMessage theOscMessage) {
             sb5 = theOscMessage.get(0).floatValue();
             println("OSC sb5 value received: " + sb5);
 
-            // Check if sb5 triggers the transition to state 4
+            // Set the flag to trigger state 4 transition in draw()
             if (sb5 == 2. && currentState == 3 && !state4Triggered) {
-                println("sb5 received, transitioning to State 4");
-
-                mov[unselectedMovie].stop();  // Stop the movie
-                currentState = 4;
-                state4Triggered = true;
-
-                endThePiece();  // End the piece
-                println("State 4: Playing Movie " + currentMovie);
+                println("OSC: Triggering State 4");
+                state4Triggered = true;  // Set the flag
             }
         }
     }
@@ -99,11 +93,14 @@ void oscEvent(OscMessage theOscMessage) {
         if (theOscMessage.checkAddrPattern("/max/outputs/sb6") == true) {
     if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
       
-      sb5 = theOscMessage.get(0).floatValue();
-      if(sb6 != 0) {
-      println("sb6: " + sb6);
+      sb6 = theOscMessage.get(0).floatValue();
+      //if(sb6 != 0) {
+      //println("sb6: " + sb6);
       
-      }
+      //}
+      
+      //println("sb6: " + sb6);
+
     }
   }
   

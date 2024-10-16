@@ -52,9 +52,23 @@ void variousStates() {
     //mov[currentMovie].stop();
     updateBackground = false;
     //photoParticles();
-    ps.addPhotoParticle();
+    //ps.addPhotoParticle();
+    
+    println("force: " + gravity);
+    
+        ps.addPhotoParticle();  // Add regular particles
+    
+    // Apply forces to each regular particle
+    for (Particles p : ps.particles) {
+      if (p instanceof PhotoParticles && !(p instanceof Particles)) {
+        p.applyForce(gravity);  // Apply gravity only to regular particles
+        //  p.applyForce(wind);     // Apply wind to all regular particles
+      }
+    }
 
-    ps.run();
+    ps.run();  // Update and display all regular particles
+
+    //ps.run();
 
     break;
 
@@ -66,7 +80,7 @@ void variousStates() {
     mov[currentMovie].play();  // Play the other movie
     image(mov[currentMovie], 0, 0, width, height);  // Display the movie
     break;
-    
+ 
 
   case 4:
     // Return to Movie 0
@@ -76,7 +90,12 @@ void variousStates() {
     println("State 4: Returning to Movie 0");
     
     }
-    image(mov[currentMovie], 0, 0, width, height);  // Display the movie
+    //image(mov[currentMovie], 0, 0, width, height);  // Display the movie
+    
+    if (!mov[7].isPlaying()) {
+      mov[7].loop();
+      println("Is mov[7] loaded and playing? " + mov[7].isPlaying());
+    }
     break;
   }
 }

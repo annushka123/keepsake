@@ -21,6 +21,13 @@ class ParticleSystem {
     PVector randomPos = new PVector(random(width), random(height));  // Random position
     particles.add(new PhotoParticles(randomPos));  // Create PhotoParticle with random position
   }
+  
+    // Apply a global force (such as wind or gravity) to all particles
+  void applyForceToAll(PVector force) {
+    for (Particles p : particles) {
+      p.applyForce(force);  // Apply the force to each particle
+    }
+  }
 
   // Run all particles (update and display them)
   void run() {

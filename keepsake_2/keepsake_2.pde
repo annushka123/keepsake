@@ -20,6 +20,7 @@ boolean videoStarted = false;
 boolean videoStopped = false;
 boolean state4Triggered = false;
 
+
 int currentMovie = 0;
 int currentState = 0;
 int currentImage = 0;
@@ -33,7 +34,9 @@ boolean state2Triggered = false;
 float alphaIncrease = 0;
 float alphaDecrease = 130;
 
-
+float gravityForce;
+PVector gravity;
+PVector wind;
 
 
 
@@ -82,6 +85,11 @@ void movieEvent(Movie m) {
 }
 
 void draw() {
+  
+   gravityForce = map(vert_pos, 1, 4, -0.1, 0.1);
+
+// Create the gravity vector based on the mapped force
+   gravity = new PVector(0, gravityForce);
   // Set the background initially
   if (updateBackground) {
     background(0);
@@ -90,6 +98,7 @@ void draw() {
 
   //starts the piece
   if (startingGesture == 2. && previousGesture != 2. && !pieceHasStarted) {
+
     startThePiece();
     println("startingGesture: ", startingGesture);
     startingState();
@@ -133,11 +142,30 @@ if (currentState == 1 && sb3 == 1. && !state2Triggered) {
     currentState = 2;
     state2Triggered = true;
     println("Gone to State 2");
+    if(mov[selectedMovie].isPlaying()) {
+      mov[selectedMovie].stop();
+    }
 }
 
 // Ensure state 2 logic is executed when active
 if (currentState == 2) {
     println("Confirmed: Now in State 2");
+    
+    
+    //ps.addPhotoParticle();  // Add regular particles
+    
+    //// Apply forces to each regular particle
+    //for (Particles p : ps.particles) {
+    //  if (p instanceof PhotoParticles && !(p instanceof Particles)) {
+    //    p.applyForce(gravity);  // Apply gravity only to regular particles
+    //    //  p.applyForce(wind);     // Apply wind to all regular particles
+    //  }
+    //}
+
+    //ps.run();  // Update and display all regular particles
+  
+    
+    
 
     autoCycleImages();  // Automatically cycle through images
     println("State 2: Cycling through images. Current image: " + currentImage);
@@ -171,63 +199,93 @@ if (currentState == 3) {
         //println("Playing movie 2");
     }
 
-    // Transition to state 4 when sb5 equals 2 and state 4 is not triggered
-    if (sb5 == 2. && !state4Triggered) {
-        println("sb5 received, transitioning to State 4");
+}
 
-        mov[unselectedMovie].stop();  // Stop the movie
+    if (state4Triggered && currentState == 3) {
+        println("Handling transition to State 4 in draw()");
+        
+        // Stop the current movie
+        mov[unselectedMovie].stop();
+
+        // Transition to state 4
         currentState = 4;
-        state4Triggered = true;
+        state4Triggered = false;  // Reset the flag
 
-        endThePiece();  // End the piece
+        endThePiece();  // Handle end logic
         println("State 4: Playing Movie " + currentMovie);
     }
-}
 
-// State 4 logic to confirm transition (optional)
-if (currentState == 4) {
-    println("Confirmed: Now in State 4");
-}
+    //if (currentState == 4) {
+    //    println("Confirmed: Now in State 4");
+    //    // Handle the crossfade effect or other logic here
+    //}
 
-  if (currentState == 4 && sb6 < 0.5) {
-    //image(mov[currentMovie], 0, 0, width, height);  // Display the first movie
 
-    //// Now apply the pixel subtraction and render the diffFrame
+
+if (currentState == 4 ) {
+    //println("sb6: " + sb6);
+
+    background(0);
+    
+    float newSpeed = map(sb6, 0, 1, 0., 1.);
+    mov[currentMovie].speed(newSpeed);
+    
+    if(sb6 < 0.8) {
+    // Correct the mappings: Fade out as sb6 decreases, fade in as it approaches 0
+    //alphaIncrease = map(sb6, 0, 1, 255, 0);  // Fade in
+    alphaIncrease = constrain(alphaIncrease+=0.3, 0, 255);
+    alphaDecrease = map(sb6, 0, 1, 0, 255);  // Fade out
+    }
+
+
+    //println("alphaIncrease: " + alphaIncrease);
+    //println("alphaDecrease: " + alphaDecrease);
+
+    // Copy current frames from both movies
     currentFrame.copy(mov[currentMovie], 0, 0, mov[currentMovie].width, mov[currentMovie].height, 0, 0, width, height);
     currentFrame2.copy(mov[7], 0, 0, mov[7].width, mov[7].height, 0, 0, width, height);
 
     currentFrame.loadPixels();
     currentFrame2.loadPixels();
 
+    // Perform pixel subtraction on both frames with corrected alpha values
+    pixelSubtraction(currentFrame, previousFrame, diffFrame, 130, 30, 130, alphaDecrease);
+    pixelSubtraction(currentFrame2, previousFrame2, diffFrame2, 50, 130, 100, alphaIncrease);
 
-    //// Perform pixel subtraction to detect motion differences
-    pixelSubtraction(currentFrame, previousFrame, diffFrame, 130, 30, 130, alphaDecrease );
-    pixelSubtraction(currentFrame2, previousFrame2, diffFrame2, 50, 130, 100, alphaIncrease );
-
-
-    //// Render the difference frame on top of everything
+    // Render the first difference frame (fading out)
+    //tint(255, alphaDecrease); 
+    tint(255, alphaDecrease);
+    
     image(diffFrame, 0, 0, width, height);
+    
+    //noTint();
+    
+     tint(255, alphaIncrease); 
+     image(diffFrame2, 0, 0, width, height);
+    // Render the second difference frame with additive blending (fading in)
+    //blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
+    
+    //noTint();
 
-    // Blend the second movie on top of the first
- 
-      blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
-      alphaIncrease += 0.5;
-      alphaIncrease = constrain(alphaIncrease, 0, 130);
-
-      alphaDecrease -= 0.2;
-      alphaDecrease = constrain(alphaIncrease, 0, 130);
-
-
-    //// Update previous frame for the next iteration
+    // Update previous frames for the next iteration
     previousFrame.copy(currentFrame, 0, 0, width, height, 0, 0, width, height);
     previousFrame2.copy(currentFrame2, 0, 0, width, height, 0, 0, width, height);
-
 
     previousFrame.updatePixels();
     previousFrame2.updatePixels();
     
-    ps.clear();
-  }
+    if(newSpeed == 0.) {
+      if(mov[currentMovie].isPlaying()){
+      mov[currentMovie].stop();
+      photoBackground();
+      }
+      //if(mov[7].isPlaying()) {
+      //  mov[7].stop();
+      //}
+    }
+}
+
+
 
   //image processing functions
   if (currentState == 0) {
@@ -242,9 +300,8 @@ if (currentState == 4) {
 
 
     //// Perform pixel subtraction to detect motion differences
-    pixelSubtraction(currentFrame, previousFrame, diffFrame, 130, 30, 130, 130 );
+    pixelSubtraction(currentFrame, previousFrame, diffFrame, 130, 30, 130, 130);
     pixelSubtraction(currentFrame2, previousFrame2, diffFrame2, 50, 130, 100, alphaIncrease );
-
 
     //// Render the difference frame on top of everything
     image(diffFrame, 0, 0, width, height);
@@ -256,6 +313,7 @@ if (currentState == 4) {
       //println(alphaIncrease);
       //constrain(amt, low, high)
       alphaIncrease = constrain(alphaIncrease, 0, 130);
+
     } else if (bowSpeed < 2.) {
       alphaIncrease -= 0.2;
       alphaIncrease = constrain(alphaIncrease, 0, 130);
@@ -287,9 +345,29 @@ if (currentState == 4) {
     previousFrame.updatePixels();
   }
 
-  if (currentState == 1 || currentState == 3) {
+  //if (currentState == 1 || currentState == 3) {
 
-    ps.addParticle();
-    ps.run();
+  //  ps.addParticle();
+  //  ps.run();
+  //}
+  
+
+  
+  //PVector gravity = new PVector(0, 0.1);  // Gravity pulling down
+  PVector wind = new PVector(0.05, 0);    // Wind pushing right
+
+  // Handle regular particles in states 1 and 3
+  if (currentState == 1 || currentState == 3) {
+    ps.addParticle();  // Add regular particles
+    
+    // Apply forces to each regular particle
+    for (Particles p : ps.particles) {
+      if (p instanceof Particles && !(p instanceof PhotoParticles)) {
+        p.applyForce(gravity);  // Apply gravity only to regular particles
+        p.applyForce(wind);     // Apply wind to all regular particles
+      }
+    }
+
+    ps.run();  // Update and display all regular particles
   }
 }
