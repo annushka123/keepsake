@@ -59,7 +59,7 @@ void variousStates() {
     break;
 
   case 3:
-    updateBackground = true;
+    //updateBackground = true;
     // Play the movie that wasn't chosen in case 1
     currentMovie = unselectedMovie; 
     println("State 3: Playing Movie " + currentMovie);
@@ -71,11 +71,12 @@ void variousStates() {
   case 4:
     // Return to Movie 0
     currentMovie = 0;
-    if(!mov[0].isPlaying()) {
+    if(!mov[currentMovie].isPlaying()) {
     mov[currentMovie].play();  // Ensure Movie 0 plays again
     println("State 4: Returning to Movie 0");
-    image(mov[currentMovie], 0, 0, width, height);  // Display the movie
+    
     }
+    image(mov[currentMovie], 0, 0, width, height);  // Display the movie
     break;
   }
 }
@@ -141,7 +142,13 @@ void variousStates() {
 //  }
 //}
 
-
+void keyPressed() {
+    if (key == '4') {  // Manually trigger state 4
+        currentState = 4;
+        state4Triggered = true;
+        println("Manually transitioned to State 4");
+    }
+}
 
 
 void photoBackground() {

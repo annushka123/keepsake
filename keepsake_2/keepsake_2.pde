@@ -31,7 +31,7 @@ boolean updateBackground = true;  // Flag to control background
 boolean state2Triggered = false;
 
 float alphaIncrease = 0;
-
+float alphaDecrease = 130;
 
 
 
@@ -129,67 +129,105 @@ void draw() {
 
 
   //goes to state 2 (images)
-  if (currentState == 1 && sb3 == 1. && !state2Triggered) {
-
+if (currentState == 1 && sb3 == 1. && !state2Triggered) {
     currentState = 2;
     state2Triggered = true;
-    println("gone to state 2");
-  }
+    println("Gone to State 2");
+}
 
-  /////debug when state 2 is reached
-  if (currentState == 2 ) {
+// Ensure state 2 logic is executed when active
+if (currentState == 2) {
     println("Confirmed: Now in State 2");
 
-    autoCycleImages();
+    autoCycleImages();  // Automatically cycle through images
     println("State 2: Cycling through images. Current image: " + currentImage);
 
-  }
-
-  if (currentState == 2 &&  previousState2 != 6) {
-
-    startML();
-    previousState2 = generate;
-    
-
-  }
-  
-
-          if (currentImage == 4) {
-      ps.clear();  // Clear photo particles when moving to State 3
-      currentState = 3;
-      println("Transitioning to State 3");
+    // Only call startML() once when entering state 2
+    if (previousState2 != 6) {
+        startML();
+        previousState2 = generate;
     }
 
-  if (currentState == 3 && previousState4 != 3 && unselectedMovie == 1) {
+    // Transition to state 3 when the current image reaches 4
+    if (currentImage == 4) {
+        ps.clear();  // Clear photo particles before moving to state 3
+        currentState = 3;
+        println("Transitioning to State 3");
+    }
+}
 
-    goToSB4a();
-    previousState4 = state4a;
-    println("playing movie 1");
-  } else if (currentState == 3 && previousState4 != 4 && unselectedMovie == 2) {
 
-    goToSB4b();
-    previousState4 = state4b;
-    println("playing movie 2");
+if (currentState == 3) {
+    println("Confirmed: Now in State 3");
+
+    // Play the correct movie based on the unselectedMovie
+    if (previousState4 != state4a && unselectedMovie == 1) {
+        goToSB4a();
+        previousState4 = state4a;
+        //println("Playing movie 1");
+    } else if (previousState4 != state4b && unselectedMovie == 2) {
+        goToSB4b();
+        previousState4 = state4b;
+        //println("Playing movie 2");
+    }
+
+    // Transition to state 4 when sb5 equals 2 and state 4 is not triggered
+    if (sb5 == 2. && !state4Triggered) {
+        println("sb5 received, transitioning to State 4");
+
+        mov[unselectedMovie].stop();  // Stop the movie
+        currentState = 4;
+        state4Triggered = true;
+
+        endThePiece();  // End the piece
+        println("State 4: Playing Movie " + currentMovie);
+    }
+}
+
+// State 4 logic to confirm transition (optional)
+if (currentState == 4) {
+    println("Confirmed: Now in State 4");
+}
+
+  if (currentState == 4 && sb6 < 0.5) {
+    //image(mov[currentMovie], 0, 0, width, height);  // Display the first movie
+
+    //// Now apply the pixel subtraction and render the diffFrame
+    currentFrame.copy(mov[currentMovie], 0, 0, mov[currentMovie].width, mov[currentMovie].height, 0, 0, width, height);
+    currentFrame2.copy(mov[7], 0, 0, mov[7].width, mov[7].height, 0, 0, width, height);
+
+    currentFrame.loadPixels();
+    currentFrame2.loadPixels();
+
+
+    //// Perform pixel subtraction to detect motion differences
+    pixelSubtraction(currentFrame, previousFrame, diffFrame, 130, 30, 130, alphaDecrease );
+    pixelSubtraction(currentFrame2, previousFrame2, diffFrame2, 50, 130, 100, alphaIncrease );
+
+
+    //// Render the difference frame on top of everything
+    image(diffFrame, 0, 0, width, height);
+
+    // Blend the second movie on top of the first
+ 
+      blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
+      alphaIncrease += 0.5;
+      alphaIncrease = constrain(alphaIncrease, 0, 130);
+
+      alphaDecrease -= 0.2;
+      alphaDecrease = constrain(alphaIncrease, 0, 130);
+
+
+    //// Update previous frame for the next iteration
+    previousFrame.copy(currentFrame, 0, 0, width, height, 0, 0, width, height);
+    previousFrame2.copy(currentFrame2, 0, 0, width, height, 0, 0, width, height);
+
+
+    previousFrame.updatePixels();
+    previousFrame2.updatePixels();
+    
+    ps.clear();
   }
-
-  if (sb5 == 2. && currentState == 3 && !state4Triggered) {
-
-
-    currentState = 4;
-    state4Triggered = true;
-    endThePiece();
-
-    println("State 4: Playing Movie" + currentMovie);
-  }
-
-  //if(currentMovie == 0 && sb6 == 1.) {
-  //  if(mov[currentMovie].isPlaying()) {
-  //  mov[currentMovie].stop();
-  //  //add a faid to black
-  //  photoBackground();
-  //  }
-
-  //}
 
   //image processing functions
   if (currentState == 0) {

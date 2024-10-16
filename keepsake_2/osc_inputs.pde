@@ -62,16 +62,39 @@ void oscEvent(OscMessage theOscMessage) {
     }
   }
   
-      if (theOscMessage.checkAddrPattern("/max/outputs/sb5") == true) {
-    if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
+  //    if (theOscMessage.checkAddrPattern("/max/outputs/sb5") == true) {
+  //  if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
       
-      sb5 = theOscMessage.get(0).floatValue();
-      if(sb5 != 0) {
-      println("sb5: " + sb5);
+  //    sb5 = theOscMessage.get(0).floatValue();
+  //    //if(sb5 != 0) {
+  //    //println("sb5: " + sb5);
       
-      }
+  //    //}
+  //    println("sb5: " + sb5);
+  //  }
+  //}
+  
+  //void oscEvent(OscMessage theOscMessage) {
+    if (theOscMessage.checkAddrPattern("/max/outputs/sb5")) {
+        if (theOscMessage.checkTypetag("f")) {
+            sb5 = theOscMessage.get(0).floatValue();
+            println("OSC sb5 value received: " + sb5);
+
+            // Check if sb5 triggers the transition to state 4
+            if (sb5 == 2. && currentState == 3 && !state4Triggered) {
+                println("sb5 received, transitioning to State 4");
+
+                mov[unselectedMovie].stop();  // Stop the movie
+                currentState = 4;
+                state4Triggered = true;
+
+                endThePiece();  // End the piece
+                println("State 4: Playing Movie " + currentMovie);
+            }
+        }
     }
-  }
+
+
   
         if (theOscMessage.checkAddrPattern("/max/outputs/sb6") == true) {
     if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
