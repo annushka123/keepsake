@@ -58,13 +58,7 @@ void variousStates() {
     
         ps.addPhotoParticle();  // Add regular particles
     
-    // Apply forces to each regular particle
-    for (Particles p : ps.particles) {
-      if (p instanceof PhotoParticles && !(p instanceof Particles)) {
-        p.applyForce(gravity);  // Apply gravity only to regular particles
-        //  p.applyForce(wind);     // Apply wind to all regular particles
-      }
-    }
+
 
     ps.run();  // Update and display all regular particles
 
@@ -162,6 +156,36 @@ void variousStates() {
 //}
 
 void keyPressed() {
+  
+  if (key == '2') {  // Manually trigger state 2
+        currentState = 2;
+        state2Triggered = true;
+        println("Manually transitioned to State 2");
+
+        // Call any additional setup or actions you want when state 2 is manually triggered
+        autoCycleImages();  // If needed, trigger image cycling manually
+        
+//            for (int i = ps.particles.size() - 1; i >= 0; i--) {  // Iterate backward through the list
+//    Particles p = ps.particles.get(i);  // Get the particle at index i
+//    if (p instanceof Particles && !(p instanceof PhotoParticles)) {  // Check if it's a regular particle
+//        ps.particles.remove(i);  // Remove it from the list
+//    }
+//}
+
+    
+    
+//    for (Particles p : ps.particles) {
+//    if (p instanceof PhotoParticles) {
+//      p.applyForce(wind);  
+//      p.applyForce(gravity);
+//    }
+//  }
+  
+//    ps.addPhotoParticle();
+//    ps.run(); 
+          
+    }
+    
     if (key == '4') {  // Manually trigger state 4
         currentState = 4;
         state4Triggered = true;

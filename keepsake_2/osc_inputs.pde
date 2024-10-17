@@ -1,5 +1,5 @@
 // wekinator features
-float bowSpeed, startingGesture, vert_pos, f4, f5, f6, f7, f8, f9, f10;
+float bowSpeed, startingGesture, vert_pos, bow_dir, vol, pitch, f7, f8, f9, f10;
 
 
 //max values
@@ -21,12 +21,12 @@ void oscEvent(OscMessage theOscMessage) {
       //starting gesture
       vert_pos = theOscMessage.get(2).floatValue();
       //bow acceleration
-      f4 = theOscMessage.get(3).floatValue();
+      bow_dir = theOscMessage.get(3).floatValue();
       //note density
-      f5 = theOscMessage.get(4).floatValue();
+      vol = theOscMessage.get(4).floatValue();
       //println("p5;", p5);
       //amplitude
-      f6 = theOscMessage.get(5).floatValue();
+      pitch = theOscMessage.get(5).floatValue();
       //pitches
       f7 = theOscMessage.get(6).floatValue();
       //range

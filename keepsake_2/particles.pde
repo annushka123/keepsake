@@ -47,3 +47,6 @@ class Particles {
   }
 }
 }
+
+  //PVector gravity = new PVector(0, 0.1);  // Gravity pulling down
+  //PVector wind = new PVector(0.05, 0);    // Wind pushing right

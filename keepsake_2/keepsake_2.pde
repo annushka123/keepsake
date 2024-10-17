@@ -35,6 +35,7 @@ float alphaIncrease = 0;
 float alphaDecrease = 130;
 
 float gravityForce;
+float windForce;
 PVector gravity;
 PVector wind;
 
@@ -86,10 +87,13 @@ void movieEvent(Movie m) {
 
 void draw() {
   
-   gravityForce = map(vert_pos, 1, 4, -0.1, 0.1);
+   gravityForce = map(vert_pos, 4, 1, -0.1, 0.1);
+   windForce = map(vert_pos, 1, 4, -0.2, 0.2);
 
 // Create the gravity vector based on the mapped force
    gravity = new PVector(0, gravityForce);
+   wind = new PVector(windForce*3, 0);
+   
   // Set the background initially
   if (updateBackground) {
     background(0);
@@ -149,26 +153,35 @@ if (currentState == 1 && sb3 == 1. && !state2Triggered) {
 
 // Ensure state 2 logic is executed when active
 if (currentState == 2) {
-    println("Confirmed: Now in State 2");
-    
-    
-    //ps.addPhotoParticle();  // Add regular particles
-    
-    //// Apply forces to each regular particle
-    //for (Particles p : ps.particles) {
-    //  if (p instanceof PhotoParticles && !(p instanceof Particles)) {
-    //    p.applyForce(gravity);  // Apply gravity only to regular particles
-    //    //  p.applyForce(wind);     // Apply wind to all regular particles
-    //  }
-    //}
+    //println("Confirmed: Now in State 2");
 
-    //ps.run();  // Update and display all regular particles
-  
     
-    
-
     autoCycleImages();  // Automatically cycle through images
     println("State 2: Cycling through images. Current image: " + currentImage);
+    
+    for (int i = ps.particles.size() - 1; i >= 0; i--) {  // Iterate backward through the list
+    Particles p = ps.particles.get(i);  // Get the particle at index i
+    if (p instanceof Particles && !(p instanceof PhotoParticles)) {  // Check if it's a regular particle
+        ps.particles.remove(i);  // Remove it from the list
+    }
+}
+
+    
+    
+    for (Particles p : ps.particles) {
+    if (p instanceof PhotoParticles) {
+      p.applyForce(wind);  
+      p.applyForce(gravity);
+    }
+  }
+  
+    ps.addPhotoParticle();
+    ps.run(); 
+  
+    println("Applying forces: Gravity = " + gravity + ", Wind = " + wind);
+
+    
+
 
     // Only call startML() once when entering state 2
     if (previousState2 != 6) {
@@ -182,6 +195,53 @@ if (currentState == 2) {
         currentState = 3;
         println("Transitioning to State 3");
     }
+    
+    mov[5].play();
+    
+    currentFrame.copy(mov[5], 0, 0, mov[5].width, mov[5].height, 0, 0, width, height);
+
+    currentFrame.loadPixels();
+    
+    pixelSubtraction(currentFrame, previousFrame, diffFrame, 150, 130, 100, 130);
+
+    blend(diffFrame, 0, 0, width, height, 0, 0, width, height, ADD);
+    
+
+    previousFrame.copy(currentFrame, 0, 0, width, height, 0, 0, width, height);
+
+
+    previousFrame.updatePixels();
+
+
+
+if (mov[5].isPlaying()) {
+    println("movie 5 is playing");
+} else {
+    // Check if mov[5] has finished and mov[6] hasn't started yet
+    if (!mov[6].isPlaying()) {
+        mov[6].play();      // Play mov[6] if it's not already playing
+        println("Started movie 6 after movie 5 stopped");
+    }
+}
+    
+    currentFrame.copy(mov[6], 0, 0, mov[6].width, mov[6].height, 0, 0, width, height);
+
+    currentFrame.loadPixels();
+    
+    pixelSubtraction(currentFrame, previousFrame, diffFrame, 150, 130, 100, 130);
+
+    blend(diffFrame, 0, 0, width, height, 0, 0, width, height, ADD);
+    
+
+    previousFrame.copy(currentFrame, 0, 0, width, height, 0, 0, width, height);
+
+
+    previousFrame.updatePixels();
+if (!mov[5].isPlaying()) {
+    mov[5].stop();  // Stop mov[5] if it's finished playing
+} else {
+    mov[5].noLoop();  // Ensure mov[5] doesn't loop
+}
 }
 
 
@@ -345,16 +405,6 @@ if (currentState == 4 ) {
     previousFrame.updatePixels();
   }
 
-  //if (currentState == 1 || currentState == 3) {
-
-  //  ps.addParticle();
-  //  ps.run();
-  //}
-  
-
-  
-  //PVector gravity = new PVector(0, 0.1);  // Gravity pulling down
-  PVector wind = new PVector(0.05, 0);    // Wind pushing right
 
   // Handle regular particles in states 1 and 3
   if (currentState == 1 || currentState == 3) {
@@ -371,3 +421,4 @@ if (currentState == 4 ) {
     ps.run();  // Update and display all regular particles
   }
 }
+  
