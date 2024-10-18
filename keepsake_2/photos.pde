@@ -1,5 +1,5 @@
 
-int imageChangeDuration = 6000;
+int imageChangeDuration = int(random(500, 8000));
 int lastImageChangeDuration = 0;
 
 void autoCycleImages() {
@@ -23,7 +23,7 @@ class PhotoParticles extends Particles {
     // Constructor
     PhotoParticles(PVector pos) {
       super(pos);
-      acceleration = new PVector(0, 0.0); 
+      acceleration = new PVector(0, 0.01); 
       //velocity = new PVector(0, 0.01); 
       
   }

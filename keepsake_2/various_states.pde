@@ -54,7 +54,7 @@ void variousStates() {
     //photoParticles();
     //ps.addPhotoParticle();
     
-    println("force: " + gravity);
+    //println("force: " + gravity);
     
         ps.addPhotoParticle();  // Add regular particles
     

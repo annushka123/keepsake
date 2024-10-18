@@ -7,6 +7,8 @@ float state4a = 3.;
 float state4b = 4.;
 int generate = 6;
 float endPiece = 5.;
+int bell_1 = 1;
+int previousBell = -1;
 float previousGesture = 1.;
 boolean pieceHasStarted = false;
 
@@ -16,6 +18,15 @@ void startThePiece() {
 OscMessage myMessage = new OscMessage("/melodies");
 
 myMessage.add(startingGesture);
+oscP5.send(myMessage, goingToMax);
+
+}
+
+void playBell_1() {
+
+OscMessage myMessage = new OscMessage("/snippets");
+
+myMessage.add(bell_1);
 oscP5.send(myMessage, goingToMax);
 
 

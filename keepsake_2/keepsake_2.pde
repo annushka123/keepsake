@@ -19,6 +19,7 @@ ParticleSystem ps;
 boolean videoStarted = false;
 boolean videoStopped = false;
 boolean state4Triggered = false;
+boolean hasState2Started = false;
 
 
 int currentMovie = 0;
@@ -33,12 +34,17 @@ boolean state2Triggered = false;
 
 float alphaIncrease = 0;
 float alphaDecrease = 130;
+float alphaTarget = 0;  // New variable for the target alpha
+float easingFactor = 0.05;
 
 float gravityForce;
 float windForce;
 PVector gravity;
 PVector wind;
 
+
+int startTime;  
+int counter; 
 
 
 void setup() {
@@ -78,7 +84,8 @@ void setup() {
   previousFrame2 = createImage(width, height, RGB);
   diffFrame2 = createImage(width, height, RGB);
 
-  //mov[currentMovie].play();
+  startTime = millis();  // Record the time when the counter starts
+  counter = 0; 
 }
 
 void movieEvent(Movie m) {
@@ -89,6 +96,8 @@ void draw() {
   
    gravityForce = map(vert_pos, 4, 1, -0.1, 0.1);
    windForce = map(vert_pos, 1, 4, -0.2, 0.2);
+   //counter = (millis() - startTime) / 1000;
+
 
 // Create the gravity vector based on the mapped force
    gravity = new PVector(0, gravityForce);
@@ -111,10 +120,6 @@ void draw() {
 
   previousGesture = startingGesture;
 
-  //keeps track of states
-  //println("Current state: " + currentState);
-
-  //calls all the states post starting state
   variousStates();
 
 
@@ -145,7 +150,15 @@ void draw() {
 if (currentState == 1 && sb3 == 1. && !state2Triggered) {
     currentState = 2;
     state2Triggered = true;
-    println("Gone to State 2");
+    //println("Gone to State 2");
+    
+   
+   
+
+  
+   
+    
+    
     if(mov[selectedMovie].isPlaying()) {
       mov[selectedMovie].stop();
     }
@@ -154,7 +167,21 @@ if (currentState == 1 && sb3 == 1. && !state2Triggered) {
 // Ensure state 2 logic is executed when active
 if (currentState == 2) {
     //println("Confirmed: Now in State 2");
+            if (!hasState2Started) {
+            startTime = millis();  // Set start time once when entering State 2
+            counter = 0;           // Reset the counter
+            hasState2Started = true;  // Mark that State 2 has started
+        }
 
+        // Update and display the counter based on elapsed time
+        counter = (millis() - startTime) / 1000;
+        println("Counter: " + counter + " sec");
+
+        // Condition to play the bell, only once when counter reaches 3 seconds
+        if (counter == 3 && previousBell != 1) {
+            playBell_1();  // Call the function to play the bell
+            previousBell = bell_1;
+        }
     
     autoCycleImages();  // Automatically cycle through images
     println("State 2: Cycling through images. Current image: " + currentImage);
@@ -165,9 +192,7 @@ if (currentState == 2) {
         ps.particles.remove(i);  // Remove it from the list
     }
 }
-
-    
-    
+   
     for (Particles p : ps.particles) {
     if (p instanceof PhotoParticles) {
       p.applyForce(wind);  
@@ -177,11 +202,6 @@ if (currentState == 2) {
   
     ps.addPhotoParticle();
     ps.run(); 
-  
-    println("Applying forces: Gravity = " + gravity + ", Wind = " + wind);
-
-    
-
 
     // Only call startML() once when entering state 2
     if (previousState2 != 6) {
@@ -190,12 +210,13 @@ if (currentState == 2) {
     }
 
     // Transition to state 3 when the current image reaches 4
-    if (currentImage == 4) {
+    if (currentImage == 10) {
         ps.clear();  // Clear photo particles before moving to state 3
         currentState = 3;
-        println("Transitioning to State 3");
+        //println("Transitioning to State 3");
     }
     
+    if(currentImage == 2 || currentImage == 9) {
     mov[5].play();
     
     currentFrame.copy(mov[5], 0, 0, mov[5].width, mov[5].height, 0, 0, width, height);
@@ -211,16 +232,18 @@ if (currentState == 2) {
 
 
     previousFrame.updatePixels();
+    
+    }
 
-
+    if(currentImage == 3 || currentImage == 7) {
 
 if (mov[5].isPlaying()) {
-    println("movie 5 is playing");
+    //println("movie 5 is playing");
 } else {
     // Check if mov[5] has finished and mov[6] hasn't started yet
     if (!mov[6].isPlaying()) {
         mov[6].play();      // Play mov[6] if it's not already playing
-        println("Started movie 6 after movie 5 stopped");
+        //println("Started movie 6 after movie 5 stopped");
     }
 }
     
@@ -243,6 +266,10 @@ if (!mov[5].isPlaying()) {
     mov[5].noLoop();  // Ensure mov[5] doesn't loop
 }
 }
+
+}
+
+
 
 
 if (currentState == 3) {
@@ -350,7 +377,7 @@ if (currentState == 4 ) {
   //image processing functions
   if (currentState == 0) {
     //image(mov[currentMovie], 0, 0, width, height);  // Display the first movie
-
+    
     //// Now apply the pixel subtraction and render the diffFrame
     currentFrame.copy(mov[currentMovie], 0, 0, mov[currentMovie].width, mov[currentMovie].height, 0, 0, width, height);
     currentFrame2.copy(mov[8], 0, 0, mov[8].width, mov[8].height, 0, 0, width, height);
@@ -362,23 +389,33 @@ if (currentState == 4 ) {
     //// Perform pixel subtraction to detect motion differences
     pixelSubtraction(currentFrame, previousFrame, diffFrame, 130, 30, 130, 130);
     pixelSubtraction(currentFrame2, previousFrame2, diffFrame2, 50, 130, 100, alphaIncrease );
+    
+    //alphaIncrease = map(bowSpeed, 1., 3., 0, 140);
+    //alphaIncrease = constrain(alphaIncrease, 0, 140); 
+    
+    alphaTarget = map(bowSpeed, 1, 3, 0, 255);
+    alphaTarget = constrain(alphaTarget, 0, 255);
+    
+    alphaIncrease += (alphaTarget - alphaIncrease) * easingFactor;  // Easing formula
+    alphaIncrease = constrain(alphaIncrease, 0, 255);
 
+    //println("alphaIncrease: " + alphaIncrease);
     //// Render the difference frame on top of everything
     image(diffFrame, 0, 0, width, height);
 
-    // Blend the second movie on top of the first
-    if (bowSpeed >= 2.) {
-      blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
-      alphaIncrease += 0.5;
-      //println(alphaIncrease);
-      //constrain(amt, low, high)
-      alphaIncrease = constrain(alphaIncrease, 0, 130);
+    //// Blend the second movie on top of the first
+    //if (bowSpeed >= 2.) {
+    blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
+    //  alphaIncrease += 0.5;
+    //  //println(alphaIncrease);
+    //  //constrain(amt, low, high)
+    //  alphaIncrease = constrain(alphaIncrease, 0, 130);
 
-    } else if (bowSpeed < 2.) {
-      alphaIncrease -= 0.2;
-      alphaIncrease = constrain(alphaIncrease, 0, 130);
-      //println(alphaIncrease);
-    }
+    //} else if (bowSpeed < 2.) {
+    //  alphaIncrease -= 0.2;
+    //  alphaIncrease = constrain(alphaIncrease, 0, 130);
+    //  //println(alphaIncrease);
+    //}
 
     //// Update previous frame for the next iteration
     previousFrame.copy(currentFrame, 0, 0, width, height, 0, 0, width, height);
@@ -405,7 +442,19 @@ if (currentState == 4 ) {
     previousFrame.updatePixels();
   }
 
+  if (currentState == 0   && transition1 > 0.85) {
+    ps.addParticle();  // Add regular particles
+    
+    // Apply forces to each regular particle
+    for (Particles p : ps.particles) {
+      if (p instanceof Particles && !(p instanceof PhotoParticles)) {
+        p.applyForce(gravity);  // Apply gravity only to regular particles
+        p.applyForce(wind);     // Apply wind to all regular particles
+      }
+    }
 
+    ps.run();  // Update and display all regular particles
+  }
   // Handle regular particles in states 1 and 3
   if (currentState == 1 || currentState == 3) {
     ps.addParticle();  // Add regular particles
