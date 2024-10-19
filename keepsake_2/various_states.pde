@@ -16,11 +16,7 @@ void startingState() {
       mov[currentMovie].play();
       println("Is mov[currentMovie] loaded and playing? " + mov[currentMovie].isPlaying());
     }
-    //currentMovie = 8;
-    if (!mov[8].isPlaying()) {
-      mov[8].loop();
-      println("Is mov[8] loaded and playing? " + mov[8].isPlaying());
-    }
+
 
     //blend(mov[8], 0, 0, width, height, 0, 0, width, height, ADD);
 
@@ -32,6 +28,15 @@ void startingState() {
 void variousStates() {
   switch(currentState) {
   case 1:
+  updateBackground = true;
+      if (!mov[8].isPlaying()) {
+      mov[8].play();
+      println("Is mov[8] loaded and playing? " + mov[8].isPlaying());
+    }
+           if (mov[0].isPlaying()) {
+      mov[0].stop();
+      println("Is mov[8] loaded and playing? " + mov[8].isPlaying());
+    }
 
     // Randomly choose between Movie 1 and 2
     if (selectedMovie == -1) {
@@ -42,7 +47,9 @@ void variousStates() {
     }
     currentMovie = selectedMovie;
     //println("State 1: Playing Movie " + currentMovie);
-    image(mov[currentMovie], 0, 0, width, height);  // Display the movie
+    //image(mov[currentMovie], 0, 0, width, height);  // Display the movie
+        //currentMovie = 8;
+
     break;
 
   case 2:
@@ -56,9 +63,7 @@ void variousStates() {
     
     //println("force: " + gravity);
     
-        ps.addPhotoParticle();  // Add regular particles
-    
-
+     ps.addPhotoParticle();  // Add regular particles
 
     ps.run();  // Update and display all regular particles
 
@@ -67,12 +72,17 @@ void variousStates() {
     break;
 
   case 3:
-    //updateBackground = true;
+    updateBackground = true;
     // Play the movie that wasn't chosen in case 1
     currentMovie = unselectedMovie; 
     println("State 3: Playing Movie " + currentMovie);
     mov[currentMovie].play();  // Play the other movie
-    image(mov[currentMovie], 0, 0, width, height);  // Display the movie
+   // image(mov[currentMovie], 0, 0, width, height);  // Display the movie
+   
+      if (!mov[0].isPlaying()) {
+      mov[0].play();
+      println("Is mov[0] loaded and playing? " + mov[0].isPlaying());
+    }
     break;
  
 

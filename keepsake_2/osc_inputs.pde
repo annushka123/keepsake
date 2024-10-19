@@ -99,7 +99,7 @@ void oscEvent(OscMessage theOscMessage) {
       
       //}
       
-      //println("sb6: " + sb6);
+      println("sb6: " + sb6);
 
     }
   }
@@ -113,7 +113,7 @@ void oscEvent(OscMessage theOscMessage) {
       
       //}
       
-      println("transition1: " + transition1);
+      //println("transition1: " + transition1);
 
     }
   }

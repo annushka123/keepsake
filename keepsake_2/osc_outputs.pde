@@ -8,6 +8,10 @@ float state4b = 4.;
 int generate = 6;
 float endPiece = 5.;
 int bell_1 = 1;
+int groan_1 = 2;
+int groan_2 = 3;
+int groan_3 = 4;
+int groan_4 = 5;
 int previousBell = -1;
 float previousGesture = 1.;
 boolean pieceHasStarted = false;
@@ -29,7 +33,41 @@ OscMessage myMessage = new OscMessage("/snippets");
 myMessage.add(bell_1);
 oscP5.send(myMessage, goingToMax);
 
+}
 
+void playGroan_1() {
+
+OscMessage myMessage = new OscMessage("/snippets");
+
+myMessage.add(groan_1);
+oscP5.send(myMessage, goingToMax);
+
+}
+
+void playGroan_2() {
+
+OscMessage myMessage = new OscMessage("/snippets");
+
+myMessage.add(groan_2);
+oscP5.send(myMessage, goingToMax);
+
+}
+
+void playGroan_3() {
+
+OscMessage myMessage = new OscMessage("/snippets");
+
+myMessage.add(groan_3);
+oscP5.send(myMessage, goingToMax);
+
+}
+
+void playGroan_4() {
+
+OscMessage myMessage = new OscMessage("/snippets");
+
+myMessage.add(groan_4);
+oscP5.send(myMessage, goingToMax);
 
 }
 

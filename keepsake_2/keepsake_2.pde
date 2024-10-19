@@ -35,7 +35,7 @@ boolean state2Triggered = false;
 float alphaIncrease = 0;
 float alphaDecrease = 130;
 float alphaTarget = 0;  // New variable for the target alpha
-float easingFactor = 0.05;
+float easingFactor = 0.5;
 
 float gravityForce;
 float windForce;
@@ -48,8 +48,9 @@ int counter;
 
 
 void setup() {
-  //fullScreen(2);
-  size(1200, 800);
+  //fullScreen(display);
+  //size(display.width, display.height);
+  size(1000, 600);
   setupOSC();
 
   ps = new ParticleSystem();
@@ -127,41 +128,38 @@ void draw() {
   if (sb2 == 1. && currentState == 0) {
 
     currentState = 1;
-    //println("currentState is: " + currentState);
+
   }
 
   //matches two optional videos with their melodies in max
   if (currentState == 1 && previousState != 0 && selectedMovie == 1) {
 
-    goToSB2a();
-    //println("selectedMovie is: " + selectedMovie);
+     goToSB2a();
     previousState = state1a;
     println("playing movie 1");
-  } else if (currentState == 1 && previousState != 1 && selectedMovie == 2) {
+    
+
+    
+} else if (currentState == 1 && previousState != 1 && selectedMovie == 2) {
 
     goToSB2b();
     //println("selectedMovie is: " + selectedMovie);
     previousState = state1b;
     println("playing movie 2");
+
+
+  
   }
+  
+
+
 
 
   //goes to state 2 (images)
 if (currentState == 1 && sb3 == 1. && !state2Triggered) {
     currentState = 2;
     state2Triggered = true;
-    //println("Gone to State 2");
-    
-   
-   
 
-  
-   
-    
-    
-    if(mov[selectedMovie].isPlaying()) {
-      mov[selectedMovie].stop();
-    }
 }
 
 // Ensure state 2 logic is executed when active
@@ -178,9 +176,29 @@ if (currentState == 2) {
         println("Counter: " + counter + " sec");
 
         // Condition to play the bell, only once when counter reaches 3 seconds
-        if (counter == 3 && previousBell != 1) {
+        if (counter == 1 || counter == 30 && previousBell != 1) {
             playBell_1();  // Call the function to play the bell
             previousBell = bell_1;
+        } 
+        
+                if (counter == 12 && previousBell != 2) {
+            playGroan_1();  // Call the function to play the bell
+            previousBell = groan_1;
+        }
+        
+                if (counter == 27 && previousBell != 3) {
+            playGroan_2();  // Call the function to play the bell
+            previousBell = groan_2;
+        }
+        
+                if (counter == 40 && previousBell != 4) {
+            playGroan_3();  // Call the function to play the bell
+            previousBell = groan_3;
+        }
+        
+                if (counter == 55 && previousBell != 5) {
+            playGroan_4();  // Call the function to play the bell
+            previousBell = groan_4;
         }
     
     autoCycleImages();  // Automatically cycle through images
@@ -209,15 +227,16 @@ if (currentState == 2) {
         previousState2 = generate;
     }
 
-    // Transition to state 3 when the current image reaches 4
-    if (currentImage == 10) {
-        ps.clear();  // Clear photo particles before moving to state 3
-        currentState = 3;
-        //println("Transitioning to State 3");
-    }
+
     
-    if(currentImage == 2 || currentImage == 9) {
-    mov[5].play();
+    if(currentImage == 2 || currentImage == 7 || currentImage == 11) {
+    
+      
+      mov[5].play();
+    
+    if (mov[6].isPlaying()) {
+    mov[6].stop();
+    }  
     
     currentFrame.copy(mov[5], 0, 0, mov[5].width, mov[5].height, 0, 0, width, height);
 
@@ -235,17 +254,17 @@ if (currentState == 2) {
     
     }
 
-    if(currentImage == 3 || currentImage == 7) {
+    if(currentImage == 4 || currentImage == 9) {
 
 if (mov[5].isPlaying()) {
-    //println("movie 5 is playing");
-} else {
-    // Check if mov[5] has finished and mov[6] hasn't started yet
+    mov[5].stop();
+}     // Check if mov[5] has finished and mov[6] hasn't started yet
     if (!mov[6].isPlaying()) {
         mov[6].play();      // Play mov[6] if it's not already playing
         //println("Started movie 6 after movie 5 stopped");
     }
-}
+
+
     
     currentFrame.copy(mov[6], 0, 0, mov[6].width, mov[6].height, 0, 0, width, height);
 
@@ -260,12 +279,24 @@ if (mov[5].isPlaying()) {
 
 
     previousFrame.updatePixels();
-if (!mov[5].isPlaying()) {
-    mov[5].stop();  // Stop mov[5] if it's finished playing
-} else {
-    mov[5].noLoop();  // Ensure mov[5] doesn't loop
-}
-}
+    
+    }
+    
+    
+
+
+
+    // Transition to state 3 when the current image reaches 4
+    if (currentImage == 10) {
+    for (int i = ps.particles.size() - 1; i >= 0; i--) {  // Iterate backward through the list
+    Particles p = ps.particles.get(i);  // Get the particle at index i
+    if (p instanceof PhotoParticles && !(p instanceof Particles)) {  // Check if it's a regular particle
+        ps.particles.remove(i);  // Remove it from the list
+    }
+}  // Clear photo particles before moving to state 3
+        currentState = 3;
+        //println("Transitioning to State 3");
+    }
 
 }
 
@@ -302,32 +333,30 @@ if (currentState == 3) {
         println("State 4: Playing Movie " + currentMovie);
     }
 
-    //if (currentState == 4) {
-    //    println("Confirmed: Now in State 4");
-    //    // Handle the crossfade effect or other logic here
-    //}
+    if (currentState == 4) {
+        println("Confirmed: Now in State 4");
+        // Handle the crossfade effect or other logic here
+    }
 
 
 
 if (currentState == 4 ) {
     //println("sb6: " + sb6);
 
-    background(0);
+    //background(0);
     
     float newSpeed = map(sb6, 0, 1, 0., 1.);
     mov[currentMovie].speed(newSpeed);
     
-    if(sb6 < 0.8) {
+    if(sb6 < 0.9) {
     // Correct the mappings: Fade out as sb6 decreases, fade in as it approaches 0
     //alphaIncrease = map(sb6, 0, 1, 255, 0);  // Fade in
-    alphaIncrease = constrain(alphaIncrease+=0.3, 0, 255);
-    alphaDecrease = map(sb6, 0, 1, 0, 255);  // Fade out
+    alphaIncrease = map(sb6, 0, 1, 130, 0); //fade in
+    alphaDecrease = map(sb6, 0, 1, 0, 130);  // Fade out
     }
+    
 
-
-    //println("alphaIncrease: " + alphaIncrease);
-    //println("alphaDecrease: " + alphaDecrease);
-
+    
     // Copy current frames from both movies
     currentFrame.copy(mov[currentMovie], 0, 0, mov[currentMovie].width, mov[currentMovie].height, 0, 0, width, height);
     currentFrame2.copy(mov[7], 0, 0, mov[7].width, mov[7].height, 0, 0, width, height);
@@ -336,22 +365,22 @@ if (currentState == 4 ) {
     currentFrame2.loadPixels();
 
     // Perform pixel subtraction on both frames with corrected alpha values
-    pixelSubtraction(currentFrame, previousFrame, diffFrame, 130, 30, 130, alphaDecrease);
+    pixelSubtraction(currentFrame, previousFrame, diffFrame, 130, 30, 130, 255);
     pixelSubtraction(currentFrame2, previousFrame2, diffFrame2, 50, 130, 100, alphaIncrease);
 
     // Render the first difference frame (fading out)
     //tint(255, alphaDecrease); 
-    tint(255, alphaDecrease);
+
     
     image(diffFrame, 0, 0, width, height);
     
     //noTint();
     
-     tint(255, alphaIncrease); 
-     image(diffFrame2, 0, 0, width, height);
+
+     //image(diffFrame2, 0, 0, width, height);
     // Render the second difference frame with additive blending (fading in)
     //blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
-    
+      blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
     //noTint();
 
     // Update previous frames for the next iteration
@@ -364,23 +393,65 @@ if (currentState == 4 ) {
     if(newSpeed == 0.) {
       if(mov[currentMovie].isPlaying()){
       mov[currentMovie].stop();
-      photoBackground();
+
       }
-      //if(mov[7].isPlaying()) {
-      //  mov[7].stop();
-      //}
+      if(mov[7].isPlaying()) {
+        mov[7].stop();
+      }
+       photoBackground();
     }
 }
 
 
 
-  //image processing functions
-  if (currentState == 0) {
+  ////image processing functions
+  if (currentState == 1 && selectedMovie == 1 || selectedMovie == 2 ) {
     //image(mov[currentMovie], 0, 0, width, height);  // Display the first movie
     
     //// Now apply the pixel subtraction and render the diffFrame
-    currentFrame.copy(mov[currentMovie], 0, 0, mov[currentMovie].width, mov[currentMovie].height, 0, 0, width, height);
+    currentFrame.copy(mov[selectedMovie], 0, 0, mov[selectedMovie].width, mov[selectedMovie].height, 0, 0, width, height);
     currentFrame2.copy(mov[8], 0, 0, mov[8].width, mov[8].height, 0, 0, width, height);
+
+    currentFrame.loadPixels();
+    currentFrame2.loadPixels();
+
+
+    //// Perform pixel subtraction to detect motion differences
+    pixelSubtraction(currentFrame, previousFrame, diffFrame, 130, 30, 130, 130);
+    pixelSubtraction(currentFrame2, previousFrame2, diffFrame2, 50, 130, 100, alphaIncrease );
+    
+
+    
+    alphaTarget = map(bowSpeed, 1, 3, 0, 255);
+    alphaTarget = constrain(alphaTarget, 0, 255);
+    
+    alphaIncrease += (alphaTarget - alphaIncrease) * easingFactor;  // Easing formula
+    alphaIncrease = constrain(alphaIncrease, 0, 255);
+
+    //println("alphaIncrease: " + alphaIncrease);
+    //// Render the difference frame on top of everything
+    image(diffFrame, 0, 0, width, height);
+
+    //// Blend the second movie on top of the first
+    //if (bowSpeed >= 2.) {
+    blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
+
+    //// Update previous frame for the next iteration
+    previousFrame.copy(currentFrame, 0, 0, width, height, 0, 0, width, height);
+    previousFrame2.copy(currentFrame2, 0, 0, width, height, 0, 0, width, height);
+
+
+    previousFrame.updatePixels();
+    previousFrame2.updatePixels();
+  }
+  
+  
+  if (currentState == 3 && selectedMovie == 1 || selectedMovie == 2) {
+    //image(mov[currentMovie], 0, 0, width, height);  // Display the first movie
+    
+    //// Now apply the pixel subtraction and render the diffFrame
+    currentFrame.copy(mov[selectedMovie], 0, 0, mov[selectedMovie].width, mov[selectedMovie].height, 0, 0, width, height);
+    currentFrame2.copy(mov[0], 0, 0, mov[0].width, mov[0].height, 0, 0, width, height);
 
     currentFrame.loadPixels();
     currentFrame2.loadPixels();
@@ -399,23 +470,12 @@ if (currentState == 4 ) {
     alphaIncrease += (alphaTarget - alphaIncrease) * easingFactor;  // Easing formula
     alphaIncrease = constrain(alphaIncrease, 0, 255);
 
-    //println("alphaIncrease: " + alphaIncrease);
-    //// Render the difference frame on top of everything
+
     image(diffFrame, 0, 0, width, height);
 
-    //// Blend the second movie on top of the first
-    //if (bowSpeed >= 2.) {
-    blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
-    //  alphaIncrease += 0.5;
-    //  //println(alphaIncrease);
-    //  //constrain(amt, low, high)
-    //  alphaIncrease = constrain(alphaIncrease, 0, 130);
 
-    //} else if (bowSpeed < 2.) {
-    //  alphaIncrease -= 0.2;
-    //  alphaIncrease = constrain(alphaIncrease, 0, 130);
-    //  //println(alphaIncrease);
-    //}
+    blend(diffFrame2, 0, 0, width, height, 0, 0, width, height, ADD);
+
 
     //// Update previous frame for the next iteration
     previousFrame.copy(currentFrame, 0, 0, width, height, 0, 0, width, height);
@@ -426,8 +486,9 @@ if (currentState == 4 ) {
     previousFrame2.updatePixels();
   }
 
+
   //// Only process pixel subtraction and diffFrame when you're in a movie-playing state (0, 1, 3, 4)
-  if (currentState == 1 || currentState == 3 || currentState == 4) {
+  if (currentState == 0 ) {
     currentFrame.copy(mov[currentMovie], 0, 0, mov[currentMovie].width, mov[currentMovie].height, 0, 0, width, height);
     currentFrame.loadPixels();
 

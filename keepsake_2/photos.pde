@@ -1,5 +1,5 @@
 
-int imageChangeDuration = int(random(500, 8000));
+int imageChangeDuration = int(random(3000, 8000));
 int lastImageChangeDuration = 0;
 
 void autoCycleImages() {
