@@ -1,6 +1,7 @@
 float previousState = -1;
 float previousState2 = -1;
 float previousState4 = -1;
+int previousSB7 = -1;
 float state1a = 0.;
 float state1b = 1.;
 float state4a = 3.;
@@ -12,6 +13,7 @@ int groan_1 = 2;
 int groan_2 = 3;
 int groan_3 = 4;
 int groan_4 = 5;
+int doni_2 = 6;
 int previousBell = -1;
 float previousGesture = 1.;
 boolean pieceHasStarted = false;
@@ -67,6 +69,15 @@ void playGroan_4() {
 OscMessage myMessage = new OscMessage("/snippets");
 
 myMessage.add(groan_4);
+oscP5.send(myMessage, goingToMax);
+
+}
+
+void playDoni_2() {
+
+OscMessage myMessage = new OscMessage("/snippets");
+
+myMessage.add(doni_2);
 oscP5.send(myMessage, goingToMax);
 
 }

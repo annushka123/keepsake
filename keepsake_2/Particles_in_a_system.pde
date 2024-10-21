@@ -28,6 +28,8 @@ class ParticleSystem {
       p.applyForce(force);  // Apply the force to each particle
     }
   }
+  
+
 
   // Run all particles (update and display them)
   void run() {

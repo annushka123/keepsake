@@ -39,6 +39,7 @@ float easingFactor = 0.5;
 
 float gravityForce;
 float windForce;
+float speedMultiplier;
 PVector gravity;
 PVector wind;
 
@@ -48,9 +49,9 @@ int counter;
 
 
 void setup() {
-  //fullScreen(display);
+  fullScreen(2);
   //size(display.width, display.height);
-  size(1000, 600);
+  //size(1000, 600);
   setupOSC();
 
   ps = new ParticleSystem();
@@ -95,9 +96,9 @@ void movieEvent(Movie m) {
 
 void draw() {
   
-   gravityForce = map(vert_pos, 4, 1, -0.1, 0.1);
+   gravityForce = map(vert_pos, 4, 1, -0.3, 0.3);
    windForce = map(vert_pos, 1, 4, -0.2, 0.2);
-   //counter = (millis() - startTime) / 1000;
+   speedMultiplier = map(vol, 1, 3, 0.5, 1.5);
 
 
 // Create the gravity vector based on the mapped force
@@ -112,7 +113,7 @@ void draw() {
 
   //starts the piece
   if (startingGesture == 2. && previousGesture != 2. && !pieceHasStarted) {
-
+    
     startThePiece();
     println("startingGesture: ", startingGesture);
     startingState();
@@ -122,19 +123,22 @@ void draw() {
   previousGesture = startingGesture;
 
   variousStates();
-
+  //photoBackground();
 
   //goes from state 0 to state 1
   if (sb2 == 1. && currentState == 0) {
-
+    photoBackground();
     currentState = 1;
+    
+    if(transition2 > 0.8) {
+      mov[6].play();
 
   }
 
   //matches two optional videos with their melodies in max
   if (currentState == 1 && previousState != 0 && selectedMovie == 1) {
 
-     goToSB2a();
+   goToSB2a();
     previousState = state1a;
     println("playing movie 1");
     
@@ -200,7 +204,12 @@ if (currentState == 2) {
             playGroan_4();  // Call the function to play the bell
             previousBell = groan_4;
         }
-    
+        
+                if (counter == 65 && previousBell != 6) {
+            playDoni_2();  // Call the function to play the bell
+            previousBell = doni_2;
+        }
+
     autoCycleImages();  // Automatically cycle through images
     println("State 2: Cycling through images. Current image: " + currentImage);
     
@@ -283,19 +292,26 @@ if (mov[5].isPlaying()) {
     }
     
     
+          //if (counter == 12 && previousBell != 2) {
+          //  playGroan_1();  // Call the function to play the bell
+          //  previousBell = groan_1;
 
 
-
-    // Transition to state 3 when the current image reaches 4
-    if (currentImage == 10) {
+    // Transition to state 3 when the current image reaches 10
+    if (currentImage == 10 ) {
+        //if(previousBell != 2) {
+        //    playGroan_1();  // Call the function to play the bell
+        //    previousBell = groan_1;
+        //}
     for (int i = ps.particles.size() - 1; i >= 0; i--) {  // Iterate backward through the list
     Particles p = ps.particles.get(i);  // Get the particle at index i
     if (p instanceof PhotoParticles && !(p instanceof Particles)) {  // Check if it's a regular particle
         ps.particles.remove(i);  // Remove it from the list
     }
-}  // Clear photo particles before moving to state 3
+     }  // Clear photo particles before moving to state 3
         currentState = 3;
         //println("Transitioning to State 3");
+
     }
 
 }
@@ -315,6 +331,11 @@ if (currentState == 3) {
         goToSB4b();
         previousState4 = state4b;
         //println("Playing movie 2");
+    }
+    
+    if(sb7 > 0.8 && previousSB7 != 6) {
+      playDoni_2();
+      previousBell = doni_2;
     }
 
 }
@@ -447,7 +468,8 @@ if (currentState == 4 ) {
   
   
   if (currentState == 3 && selectedMovie == 1 || selectedMovie == 2) {
-    //image(mov[currentMovie], 0, 0, width, height);  // Display the first movie
+    int colorAdjuster = int(map(pitch, 1, 4, 100, 200));
+    colorAdjuster = constrain(colorAdjuster, 100, 200);
     
     //// Now apply the pixel subtraction and render the diffFrame
     currentFrame.copy(mov[selectedMovie], 0, 0, mov[selectedMovie].width, mov[selectedMovie].height, 0, 0, width, height);
@@ -458,8 +480,8 @@ if (currentState == 4 ) {
 
 
     //// Perform pixel subtraction to detect motion differences
-    pixelSubtraction(currentFrame, previousFrame, diffFrame, 130, 30, 130, 130);
-    pixelSubtraction(currentFrame2, previousFrame2, diffFrame2, 50, 130, 100, alphaIncrease );
+    pixelSubtraction(currentFrame, previousFrame, diffFrame, colorAdjuster, 30, 130, 130);
+    pixelSubtraction(currentFrame2, previousFrame2, diffFrame2, 70, colorAdjuster, 100, alphaIncrease );
     
     //alphaIncrease = map(bowSpeed, 1., 3., 0, 140);
     //alphaIncrease = constrain(alphaIncrease, 0, 140); 
@@ -504,6 +526,7 @@ if (currentState == 4 ) {
   }
 
   if (currentState == 0   && transition1 > 0.85) {
+    //photoBackground();
     ps.addParticle();  // Add regular particles
     
     // Apply forces to each regular particle
@@ -518,6 +541,7 @@ if (currentState == 4 ) {
   }
   // Handle regular particles in states 1 and 3
   if (currentState == 1 || currentState == 3) {
+    
     ps.addParticle();  // Add regular particles
     
     // Apply forces to each regular particle
@@ -525,6 +549,7 @@ if (currentState == 4 ) {
       if (p instanceof Particles && !(p instanceof PhotoParticles)) {
         p.applyForce(gravity);  // Apply gravity only to regular particles
         p.applyForce(wind);     // Apply wind to all regular particles
+        p.adjustSpeed(speedMultiplier);
       }
     }
 

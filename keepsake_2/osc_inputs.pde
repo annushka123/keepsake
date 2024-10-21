@@ -3,7 +3,7 @@ float bowSpeed, startingGesture, vert_pos, bow_dir, vol, pitch, f7, f8, f9, f10;
 
 
 //max values
-float sb2, sb3, sb5, sb6, transition1 = 0;
+float sb2, sb3, sb5, sb6, transition1, transition2, sb7 = 0;
 
 void setupOSC() {
   oscP5 = new OscP5(this, 12001);
@@ -99,7 +99,7 @@ void oscEvent(OscMessage theOscMessage) {
       
       //}
       
-      println("sb6: " + sb6);
+      //println("sb6: " + sb6);
 
     }
   }
@@ -108,12 +108,25 @@ void oscEvent(OscMessage theOscMessage) {
     if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
       
       transition1 = theOscMessage.get(0).floatValue();
-      //if(sb6 != 0) {
-      //println("sb6: " + sb6);
+
+
+    }
+  }
+  
+       if (theOscMessage.checkAddrPattern("/max/outputs/sb7") == true) {
+    if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
       
-      //}
+      sb7 = theOscMessage.get(0).floatValue();
+
+
+    }
+  }
+  
+         if (theOscMessage.checkAddrPattern("/max/outputs/transition2") == true) {
+    if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
       
-      //println("transition1: " + transition1);
+      transition2 = theOscMessage.get(0).floatValue();
+
 
     }
   }

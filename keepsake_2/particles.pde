@@ -17,13 +17,18 @@ class Particles {
   void applyForce(PVector force) {
     acceleration.add(force);
   }
+  
+        // Adjust the particle's speed by scaling its velocity
+    void adjustSpeed(float multiplier) {
+        velocity.mult(multiplier); // Scale the current velocity
+    }
 
   // Move the particle toward the target
   void update() {
     velocity.add(acceleration);
     position.add(velocity);
     acceleration.mult(0);  // Reset acceleration
-    lifespan -= 2.0;
+    lifespan -= .5;
   }
 
   // Display the particle as a small ellipse
