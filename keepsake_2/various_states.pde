@@ -73,7 +73,7 @@ void variousStates() {
       mov[0].play();
       
     }
-    println("Is mov[3] loaded and playing? " + mov[3].isPlaying());
+    println("Is mov[0] loaded and playing? " + mov[0].isPlaying());
     // Play the movie that wasn't chosen in case 1
     currentMovie = unselectedMovie; 
     println("State 3: Playing Movie " + currentMovie);

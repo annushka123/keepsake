@@ -52,7 +52,7 @@ void oscEvent(OscMessage theOscMessage) {
   }
   
     if (theOscMessage.checkAddrPattern("/max/outputs/sb3") == true) {
-    if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
+      if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
       
       sb3 = theOscMessage.get(0).floatValue();
       if(sb3 != 0) {
@@ -71,7 +71,7 @@ void oscEvent(OscMessage theOscMessage) {
             println("OSC sb5 value received: " + sb5);
 
             // Set the flag to trigger state 4 transition in draw()
-            if (sb5 == 2. && currentState == 3 && !state4Triggered) {
+            if (currentState== 3&&sb5 == 2. && !state4Triggered) {
                 println("OSC: Triggering State 4");
                 state4Triggered = true;  // Set the flag
             }

@@ -343,7 +343,11 @@ if (mov[5].isPlaying()) {
 }
 
 
-
+            //// Set the flag to trigger state 4 transition in draw()
+            //if (sb5 == 2. && currentState == 3 && !state4Triggered) {
+            //    println("OSC: Triggering State 4");
+            //    state4Triggered = true;  // Set the flag
+            //}
 
 if (currentState == 3) {
     //println("Confirmed: Now in State 3");
@@ -363,7 +367,7 @@ if (currentState == 3) {
 
 }
 
-    if (state4Triggered && currentState == 3) {
+    if (state4Triggered && currentState == 3 ) {
         println("Handling transition to State 4 in draw()");
         
         // Stop the current movie
@@ -543,21 +547,7 @@ if (currentState == 4 ) {
     previousFrame.updatePixels();
     previousFrame2.updatePixels();
     
-    
-    //            if (!hasState3Started) {
-    //        startTime = millis();  // Set start time once when entering State 2
-    //        counter = 0;           // Reset the counter
-    //        hasState3Started = true;  // Mark that State 2 has started
-    //    }
 
-    //    // Update and display the counter based on elapsed time
-    //    counter = (millis() - startTime) / 1000;
-    //    println("Counter: " + counter + " sec");
-    
-    //     if(counter == 45 && previousSnippet != 1) {
-    //playSnippets();
-    //previousSnippet = snippetPlay;
-    //}
   }
 
 
@@ -577,20 +567,21 @@ if (currentState == 4 ) {
     previousFrame.updatePixels();
   }
 
-  if (currentState == 0   && transition1 == 0.85) {
-    //photoBackground();
-    ps.addParticle();  // Add regular particles
+  //if (currentState == 0   && transition1 > 0.85) {
+  //  background(0);
+  //  ps.addParticle();  // Add regular particles
     
-    // Apply forces to each regular particle
-    for (Particles p : ps.particles) {
-      if (p instanceof Particles && !(p instanceof PhotoParticles)) {
-        p.applyForce(gravity);  // Apply gravity only to regular particles
-        p.applyForce(wind);     // Apply wind to all regular particles
-      }
-    }
+  //  // Apply forces to each regular particle
+  //  for (Particles p : ps.particles) {
+  //    if (p instanceof Particles && !(p instanceof PhotoParticles)) {
+  //      p.applyForce(gravity);  // Apply gravity only to regular particles
+  //      p.applyForce(wind);     // Apply wind to all regular particles
+  //    }
+  //  }
 
-    ps.run();  // Update and display all regular particles
-  }
+  //  ps.run();  // Update and display all regular particles
+  //}
+  
   // Handle regular particles in states 1 and 3
   if (currentState == 1 || currentState == 3) {
     
