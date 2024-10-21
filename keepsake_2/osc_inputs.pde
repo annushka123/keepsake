@@ -62,17 +62,7 @@ void oscEvent(OscMessage theOscMessage) {
     }
   }
   
-  //    if (theOscMessage.checkAddrPattern("/max/outputs/sb5") == true) {
-  //  if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
-      
-  //    sb5 = theOscMessage.get(0).floatValue();
-  //    //if(sb5 != 0) {
-  //    //println("sb5: " + sb5);
-      
-  //    //}
-  //    println("sb5: " + sb5);
-  //  }
-  //}
+
   
   //void oscEvent(OscMessage theOscMessage) {
     if (theOscMessage.checkAddrPattern("/max/outputs/sb5")) {
@@ -94,12 +84,7 @@ void oscEvent(OscMessage theOscMessage) {
     if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
       
       sb6 = theOscMessage.get(0).floatValue();
-      //if(sb6 != 0) {
-      //println("sb6: " + sb6);
-      
-      //}
-      
-      //println("sb6: " + sb6);
+
 
     }
   }
@@ -108,25 +93,40 @@ void oscEvent(OscMessage theOscMessage) {
     if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
       
       transition1 = theOscMessage.get(0).floatValue();
-
+      //if(sb6 != 0) {
+      //println("sb6: " + sb6);
+      
+      //}
+      
+      //println("transition1: " + transition1);
 
     }
   }
   
-       if (theOscMessage.checkAddrPattern("/max/outputs/sb7") == true) {
-    if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
+  //     if (theOscMessage.checkAddrPattern("/max/outputs/sb7") == true) {
+  //  if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
       
-      sb7 = theOscMessage.get(0).floatValue();
+  //    sb7 = theOscMessage.get(0).floatValue();
+  //    //if(sb6 != 0) {
+  //    //println("sb6: " + sb6);
+      
+  //    //}
+      
+  //    //println("transition1: " + transition1);
 
-
-    }
-  }
+  //  }
+  //}
   
          if (theOscMessage.checkAddrPattern("/max/outputs/transition2") == true) {
     if (theOscMessage.checkTypetag("f")) { // Now looking for 6 parameters
       
       transition2 = theOscMessage.get(0).floatValue();
-
+      //if(sb6 != 0) {
+      //println("sb6: " + sb6);
+      
+      //}
+      
+      //println("transition1: " + transition1);
 
     }
   }

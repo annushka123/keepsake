@@ -16,6 +16,9 @@ int groan_4 = 5;
 int doni_2 = 6;
 int previousBell = -1;
 float previousGesture = 1.;
+int snippetRec = 0;
+int snippetPlay = 1;
+int previousSnippet = -1;
 boolean pieceHasStarted = false;
 
 
@@ -135,6 +138,24 @@ oscP5.send(myMessage, goingToMax);
 
 println("sent generate message to Max");
   
+}
+
+void recSnippets() {
+
+OscMessage myMessage = new OscMessage("/snippets");
+
+myMessage.add(snippetRec);
+oscP5.send(myMessage, goingToMax);
+
+}
+
+void playSnippets() {
+
+OscMessage myMessage = new OscMessage("/snippets");
+
+myMessage.add(snippetPlay);
+oscP5.send(myMessage, goingToMax);
+
 }
 
 void endThePiece() {

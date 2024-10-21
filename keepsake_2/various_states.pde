@@ -6,7 +6,7 @@ void startingState() {
 
   case 0:
     // Play Movie 0
-
+    //background(0);
     pieceHasStarted = true;
     previousGesture = startingGesture;
     currentMovie = 0;
@@ -19,7 +19,8 @@ void startingState() {
 
 
     //blend(mov[8], 0, 0, width, height, 0, 0, width, height, ADD);
-
+    //shouldClearBackground = true;
+    background(0);
     break;
   }
 }
@@ -29,10 +30,10 @@ void variousStates() {
   switch(currentState) {
   case 1:
   
-   updateBackground = true;
+   //updateBackground = true;
   
       if (!mov[8].isPlaying()) {
-      mov[8].play();
+      mov[8].loop();
       println("Is mov[8] loaded and playing? " + mov[8].isPlaying());
     }
 
@@ -42,36 +43,22 @@ void variousStates() {
       unselectedMovie = (selectedMovie == 1) ? 2 : 1; 
       //println("State 1: Randomly selected Movie " + selectedMovie);
       mov[selectedMovie].play();  // Play the randomly selected movie
-            if (mov[0].isPlaying()) {
-      mov[0].stop();
-      println("Is mov[0] loaded and playing? " + mov[0].isPlaying());
-     //updateBackground = true;
-    }
+
 
     }
     currentMovie = selectedMovie;
-    //println("State 1: Playing Movie " + currentMovie);
-    //image(mov[currentMovie], 0, 0, width, height);  // Display the movie
-        //currentMovie = 8;
-          if (mov[0].isPlaying()) {
-      mov[0].stop();
-      println("Is mov[0] loaded and playing? " + mov[0].isPlaying());
-   //updateBackground = true;
-    }
 
+    //shouldClearBackground = true;
+    background(0);
     break;
 
   case 2:
     // Display particles generated from the current image
     println("State 2: Displaying particles from Image " + currentImage);
-    //image(img[currentImage], 0, 0, width, height);
-    //mov[currentMovie].stop();
-    updateBackground = false;
-    //photoParticles();
-    //ps.addPhotoParticle();
-    
-    //println("force: " + gravity);
-    
+
+    if(mov[8].isPlaying()) {
+      mov[8].stop();
+    }
      ps.addPhotoParticle();  // Add regular particles
 
     ps.run();  // Update and display all regular particles
@@ -81,21 +68,32 @@ void variousStates() {
     break;
 
   case 3:
-    updateBackground = true;
+    
+      if (!mov[0].isPlaying()) {
+      mov[0].play();
+      
+    }
+    println("Is mov[3] loaded and playing? " + mov[3].isPlaying());
     // Play the movie that wasn't chosen in case 1
     currentMovie = unselectedMovie; 
     println("State 3: Playing Movie " + currentMovie);
+    
+    if(mov[currentMovie].isLoaded() && !mov[currentMovie].isPlaying()) {
     mov[currentMovie].play();  // Play the other movie
-   // image(mov[currentMovie], 0, 0, width, height);  // Display the movie
+    //image(mov[currentMovie], 0, 0, width, height);  // Display the movie
    
-      if (!mov[0].isPlaying()) {
-      mov[0].play();
-      println("Is mov[0] loaded and playing? " + mov[0].isPlaying());
     }
+    //shouldClearBackground = true;
+    background(0);
     break;
  
 
   case 4:
+  
+      if (!mov[7].isPlaying()) {
+      mov[7].loop();
+      println("Is mov[7] loaded and playing? " + mov[7].isPlaying());
+    }
     // Return to Movie 0
     currentMovie = 0;
     if(!mov[currentMovie].isPlaying()) {
@@ -105,10 +103,7 @@ void variousStates() {
     }
     //image(mov[currentMovie], 0, 0, width, height);  // Display the movie
     
-    if (!mov[7].isPlaying()) {
-      mov[7].loop();
-      println("Is mov[7] loaded and playing? " + mov[7].isPlaying());
-    }
+
     break;
   }
 }

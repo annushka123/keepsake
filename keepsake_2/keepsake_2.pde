@@ -20,6 +20,8 @@ boolean videoStarted = false;
 boolean videoStopped = false;
 boolean state4Triggered = false;
 boolean hasState2Started = false;
+boolean hasState3Started = false;
+boolean shouldClearBackground = false;
 
 
 int currentMovie = 0;
@@ -76,6 +78,8 @@ void setup() {
 
   for (int i = 0; i < mov.length; i++) {
     mov[i] = new Movie(this, "keepsake" + i + ".mp4");
+    //mov[i].loop();
+    //  mov[i].pause();
   }
   // Prepare images to hold frame data
   currentFrame = createImage(width, height, RGB);
@@ -92,6 +96,7 @@ void setup() {
 
 void movieEvent(Movie m) {
   m.read();
+  //m.play();
 }
 
 void draw() {
@@ -106,9 +111,19 @@ void draw() {
    wind = new PVector(windForce*3, 0);
    
   // Set the background initially
-  if (updateBackground) {
-    background(0);
-  }
+  //if (updateBackground) {
+  //  background(0);
+  //}
+  
+      if (shouldClearBackground) {
+        background(0);
+        shouldClearBackground = false; // Reset the flag after clearing
+    }
+
+
+
+        
+
 
 
   //starts the piece
@@ -127,16 +142,27 @@ void draw() {
 
   //goes from state 0 to state 1
   if (sb2 == 1. && currentState == 0) {
-    photoBackground();
+    
     currentState = 1;
     
-    if(transition2 > 0.8) {
-      mov[6].play();
+    
+    
+    
+     if (mov[0].isPlaying()) {
+      mov[0].stop();
+      println("Is mov[0] loaded and playing? " + mov[0].isPlaying());
+  
+    }
+
 
   }
 
   //matches two optional videos with their melodies in max
   if (currentState == 1 && previousState != 0 && selectedMovie == 1) {
+    
+        //shouldClearBackground = true;
+    
+    println("background: " + shouldClearBackground);
 
    goToSB2a();
     previousState = state1a;
@@ -244,7 +270,7 @@ if (currentState == 2) {
       mov[5].play();
     
     if (mov[6].isPlaying()) {
-    mov[6].stop();
+    mov[6].pause();
     }  
     
     currentFrame.copy(mov[5], 0, 0, mov[5].width, mov[5].height, 0, 0, width, height);
@@ -320,8 +346,8 @@ if (mov[5].isPlaying()) {
 
 
 if (currentState == 3) {
-    println("Confirmed: Now in State 3");
-
+    //println("Confirmed: Now in State 3");
+   //photoBackground();
     // Play the correct movie based on the unselectedMovie
     if (previousState4 != state4a && unselectedMovie == 1) {
         goToSB4a();
@@ -333,10 +359,7 @@ if (currentState == 3) {
         //println("Playing movie 2");
     }
     
-    if(sb7 > 0.8 && previousSB7 != 6) {
-      playDoni_2();
-      previousBell = doni_2;
-    }
+
 
 }
 
@@ -355,7 +378,7 @@ if (currentState == 3) {
     }
 
     if (currentState == 4) {
-        println("Confirmed: Now in State 4");
+        //println("Confirmed: Now in State 4");
         // Handle the crossfade effect or other logic here
     }
 
@@ -419,7 +442,7 @@ if (currentState == 4 ) {
       if(mov[7].isPlaying()) {
         mov[7].stop();
       }
-       photoBackground();
+       //photoBackground();
     }
 }
 
@@ -427,7 +450,13 @@ if (currentState == 4 ) {
 
   ////image processing functions
   if (currentState == 1 && selectedMovie == 1 || selectedMovie == 2 ) {
+    //shouldClearBackground = true;
     //image(mov[currentMovie], 0, 0, width, height);  // Display the first movie
+    
+    if(previousSnippet != 0) {
+    recSnippets();
+    previousSnippet = snippetRec;
+    }
     
     //// Now apply the pixel subtraction and render the diffFrame
     currentFrame.copy(mov[selectedMovie], 0, 0, mov[selectedMovie].width, mov[selectedMovie].height, 0, 0, width, height);
@@ -468,8 +497,15 @@ if (currentState == 4 ) {
   
   
   if (currentState == 3 && selectedMovie == 1 || selectedMovie == 2) {
-    int colorAdjuster = int(map(pitch, 1, 4, 100, 200));
-    colorAdjuster = constrain(colorAdjuster, 100, 200);
+    //shouldClearBackground = true;
+    
+    // if(previousSnippet != 1) {
+    //playSnippets();
+    //previousSnippet = snippetPlay;
+    //}
+    
+    int colorAdjuster = int(map(pitch, 1, 4, 80, 230));
+    colorAdjuster = constrain(colorAdjuster, 80, 230);
     
     //// Now apply the pixel subtraction and render the diffFrame
     currentFrame.copy(mov[selectedMovie], 0, 0, mov[selectedMovie].width, mov[selectedMovie].height, 0, 0, width, height);
@@ -506,6 +542,22 @@ if (currentState == 4 ) {
 
     previousFrame.updatePixels();
     previousFrame2.updatePixels();
+    
+    
+    //            if (!hasState3Started) {
+    //        startTime = millis();  // Set start time once when entering State 2
+    //        counter = 0;           // Reset the counter
+    //        hasState3Started = true;  // Mark that State 2 has started
+    //    }
+
+    //    // Update and display the counter based on elapsed time
+    //    counter = (millis() - startTime) / 1000;
+    //    println("Counter: " + counter + " sec");
+    
+    //     if(counter == 45 && previousSnippet != 1) {
+    //playSnippets();
+    //previousSnippet = snippetPlay;
+    //}
   }
 
 
@@ -525,7 +577,7 @@ if (currentState == 4 ) {
     previousFrame.updatePixels();
   }
 
-  if (currentState == 0   && transition1 > 0.85) {
+  if (currentState == 0   && transition1 == 0.85) {
     //photoBackground();
     ps.addParticle();  // Add regular particles
     
