@@ -165,28 +165,30 @@ void draw() {
   }
 
   //matches two optional videos with their melodies in max
-  if (currentState == 1 && previousState != 0 && selectedMovie == 1) {
+  if (currentState == 1 && previousState != 0 && currentMovie == 1) {
     
         //shouldClearBackground = true;
     
     //println("background: " + shouldClearBackground);
 
-   goToSB2a();
+    goToSB2a();
     previousState = state1a;
     println("playing movie 1");
     
 
     
-} else if (currentState == 1 && previousState != 1 && selectedMovie == 2) {
-   background(0);
-    goToSB2b();
-    //println("selectedMovie is: " + selectedMovie);
-    previousState = state1b;
-    println("playing movie 2");
+} 
+
+//else if (currentState == 1 && previousState != 1 && selectedMovie == 2) {
+//   background(0);
+//    goToSB2b();
+//    //println("selectedMovie is: " + selectedMovie);
+//    previousState = state1b;
+//    println("playing movie 2");
 
 
   
-  }
+//  }
   
 
 
@@ -356,15 +358,17 @@ if (mov[5].isPlaying()) {
             //    state4Triggered = true;  // Set the flag
             //}
 
-if (currentState == 3) {
+if (currentState == 3 && currentMovie == 2) {
     //println("Confirmed: Now in State 3");
    //photoBackground();
     // Play the correct movie based on the unselectedMovie
-    if (previousState4 != state4a && unselectedMovie == 1) {
-        goToSB4a();
-        previousState4 = state4a;
-        //println("Playing movie 1");
-    } else if (previousState4 != state4b && unselectedMovie == 2) {
+    //if (previousState4 != state4a && unselectedMovie == 1) {
+    //    goToSB4a();
+    //    previousState4 = state4a;
+    //    //println("Playing movie 1");
+    //} else 
+    
+    if (previousState4 != state4b) {
         goToSB4b();
         previousState4 = state4b;
         //println("Playing movie 2");
@@ -378,7 +382,8 @@ if (currentState == 3) {
         println("Handling transition to State 4 in draw()");
         
         // Stop the current movie
-        mov[unselectedMovie].stop();
+        mov[2].stop();
+        
 
         // Transition to state 4
         currentState = 4;
@@ -406,8 +411,8 @@ if (currentState == 4 ) {
     if(sb6 < 0.9) {
     // Correct the mappings: Fade out as sb6 decreases, fade in as it approaches 0
     //alphaIncrease = map(sb6, 0, 1, 255, 0);  // Fade in
-    alphaIncrease = map(sb6, 0, 1, 130, 0); //fade in
-    alphaDecrease = map(sb6, 0, 1, 0, 130);  // Fade out
+    alphaIncrease = map(sb6, 0, 1, 255, 0); //fade in
+    alphaDecrease = map(sb6, 0, 1, 0, 255);  // Fade out
     }
     
 
@@ -460,17 +465,11 @@ if (currentState == 4 ) {
 
 
   ////image processing functions
-  if (currentState == 1 && selectedMovie == 1 || selectedMovie == 2 ) {
-    //shouldClearBackground = true;
-    //image(mov[currentMovie], 0, 0, width, height);  // Display the first movie
-    
-    //if(previousSnippet != 0) {
-    //recSnippets();
-    //previousSnippet = snippetRec;
-    //}
+  if (currentState == 1 && currentMovie == 1 ) {
+
     
     //// Now apply the pixel subtraction and render the diffFrame
-    currentFrame.copy(mov[selectedMovie], 0, 0, mov[selectedMovie].width, mov[selectedMovie].height, 0, 0, width, height);
+    currentFrame.copy(mov[currentMovie], 0, 0, mov[currentMovie].width, mov[currentMovie].height, 0, 0, width, height);
     currentFrame2.copy(mov[8], 0, 0, mov[8].width, mov[8].height, 0, 0, width, height);
 
     currentFrame.loadPixels();
@@ -507,19 +506,16 @@ if (currentState == 4 ) {
   }
   
   
-  if (currentState == 3 && selectedMovie == 1 || selectedMovie == 2) {
+  if (currentState == 3 && currentMovie == 2 ) {
     //shouldClearBackground = true;
     
-    // if(previousSnippet != 1) {
-    //playSnippets();
-    //previousSnippet = snippetPlay;
-    //}
+
     
     int colorAdjuster = int(map(pitch, 1, 4, 80, 230));
     colorAdjuster = constrain(colorAdjuster, 80, 230);
     
     //// Now apply the pixel subtraction and render the diffFrame
-    currentFrame.copy(mov[selectedMovie], 0, 0, mov[selectedMovie].width, mov[selectedMovie].height, 0, 0, width, height);
+    currentFrame.copy(mov[currentMovie], 0, 0, mov[currentMovie].width, mov[currentMovie].height, 0, 0, width, height);
     currentFrame2.copy(mov[0], 0, 0, mov[0].width, mov[0].height, 0, 0, width, height);
 
     currentFrame.loadPixels();

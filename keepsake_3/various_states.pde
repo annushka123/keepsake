@@ -33,7 +33,7 @@ void variousStates() {
   case 1:
   
     //println("Transitioning to State 1, selectedMovie: " + selectedMovie);
-      background(0); // Clear background explicitly
+    
   
       if (!mov[8].isPlaying()) {
       mov[8].loop();
@@ -41,21 +41,25 @@ void variousStates() {
     }
 
     // Randomly choose between Movie 1 and 2
-    if (selectedMovie == -1) {
-      selectedMovie = rand.nextInt(2) + 1;  // Randomly pick Movie 1 or 2
-      unselectedMovie = (selectedMovie == 1) ? 2 : 1; 
-      //println("State 1: Randomly selected Movie " + selectedMovie);
-      mov[selectedMovie].play();  // Play the randomly selected movie
+    //if (selectedMovie == -1) {
+    //  selectedMovie = rand.nextInt(2) + 1;  // Randomly pick Movie 1 or 2
+    //  unselectedMovie = (selectedMovie == 1) ? 2 : 1; 
+    //  //println("State 1: Randomly selected Movie " + selectedMovie);
+    //  mov[selectedMovie].play();  // Play the randomly selected movie
 
 
+    //}
+    currentMovie = 1;
+    if(!mov[currentMovie].isPlaying()) {
+      mov[currentMovie].play();
     }
-    currentMovie = selectedMovie;
 
     ////shouldClearBackground = true;
     //      if (selectedMovie == 2) {
     //    println("Selected Movie 2: Forcing background clear.");
     //    background(0);
     //  }
+      background(0); // Clear background explicitly
     break;
 
   case 2:
@@ -74,29 +78,26 @@ void variousStates() {
     break;
 
   case 3:
-    background(0);
     
+        currentMovie = 2; 
+        if(!mov[currentMovie].isPlaying()) {
+          mov[currentMovie].loop();
+        }
+        
+    println("State 3: Playing Movie " + currentMovie);
       if (!mov[0].isPlaying()) {
       mov[0].play();
-      
+      println("Is mov[0] loaded and playing? " + mov[0].isPlaying());
     }
-    println("Is mov[0] loaded and playing? " + mov[0].isPlaying());
-    // Play the movie that wasn't chosen in case 1
-    currentMovie = unselectedMovie; 
-    println("State 3: Playing Movie " + currentMovie);
     
-    if(mov[currentMovie].isLoaded() && !mov[currentMovie].isPlaying()) {
-    mov[currentMovie].play();  // Play the other movie
-    //image(mov[currentMovie], 0, 0, width, height);  // Display the movie
-   
-    }
-    //shouldClearBackground = true;
-    
+    //background(0);
     break;
  
 
   case 4:
-  
+  if(mov[2].isPlaying()) {
+    mov[2].stop();
+  }
       if (!mov[7].isPlaying()) {
       mov[7].loop();
       println("Is mov[7] loaded and playing? " + mov[7].isPlaying());
@@ -104,13 +105,13 @@ void variousStates() {
     // Return to Movie 0
     currentMovie = 0;
     if(!mov[currentMovie].isPlaying()) {
-    mov[currentMovie].play();  // Ensure Movie 0 plays again
+    mov[currentMovie].loop();  // Ensure Movie 0 plays again
     println("State 4: Returning to Movie 0");
     
     }
     //image(mov[currentMovie], 0, 0, width, height);  // Display the movie
     
-
+   //background(0);
     break;
   }
 }
